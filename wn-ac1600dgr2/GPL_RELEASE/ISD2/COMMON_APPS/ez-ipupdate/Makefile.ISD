@@ -1,0 +1,66 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+
+ifeq ($(CONFIG_HAS_DYNS_DDNS),y)
+MY_FEATURES += -DHAS_DYNS_DDNS=1
+endif
+
+ifeq ($(CONFIG_HAS_ODS_DDNS),y)
+MY_FEATURES += -DHAS_ODS_DDNS=1
+endif
+
+ifeq ($(CONFIG_HAS_TZO_DDNS),y)
+MY_FEATURES += -DHAS_TZO_DDNS=1
+endif
+
+ifeq ($(CONFIG_HAS_IOBB_DDNS),y)
+MY_FEATURES += -DHAS_IOBB_DDNS=1
+endif
+
+ifeq ($(CONFIG_HAS_DLINK_DDNS),y)
+MY_FEATURES += -DHAS_DLINK_DDNS=1
+endif
+
+ifeq ($(CONFIG_HAS_DDNS_CONNECT_STATUS),y)
+MY_FEATURES += -DHAS_DDNS_CONNECT_STATUS=1
+endif
+
+.PHONY:	all init clean build distclean install
+
+all: build
+
+init:
+
+clean:
+	touch Makefile; \
+	$(MAKE) -f Makefile clean
+
+build:	init
+	touch Makefile; \
+	$(MAKE) -f Makefile CROSS=$(CROSS) \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS) $(MY_FEATURES)" \
+	EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" all 
+
+distclean:
+	$(MAKE) -f Makefile clean
+
+install_check:
+	if [ ! -e ez-ipupdate ]; then \
+		false; \
+	fi
+
+install:install_check
+ifneq ($(PREFIX_DIR),)
+	install -c ez-ipupdate $(PREFIX_DIR)/sbin;
+else
+	install -c ez-ipupdate $(TARGET_APP_DIR)/sbin;
+endif
+

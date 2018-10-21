@@ -1,0 +1,86 @@
+dirutil.lo: dirutil.c /opt/buildroot-be-gcc434/usr/include/sys/stat.h \
+  /opt/buildroot-be-gcc434/usr/include/features.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/uClibc_config.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/cdefs.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/types.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/wordsize.h \
+  /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include/stddef.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/typesizes.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/pthreadtypes.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sched.h \
+  /opt/buildroot-be-gcc434/usr/include/time.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/stat.h \
+  /opt/buildroot-be-gcc434/usr/include/sgidefs.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/types.h \
+  /opt/buildroot-be-gcc434/usr/include/endian.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/endian.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/select.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/select.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sigset.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/time.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/sysmacros.h \
+  /opt/buildroot-be-gcc434/usr/include/unistd.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/posix_opt.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/confname.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/getopt.h \
+  /opt/buildroot-be-gcc434/usr/include/string.h \
+  /opt/buildroot-be-gcc434/usr/include/stdlib.h \
+  /opt/buildroot-be-gcc434/usr/include/alloca.h dirutil.h
+
+/opt/buildroot-be-gcc434/usr/include/sys/stat.h:
+
+/opt/buildroot-be-gcc434/usr/include/features.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/uClibc_config.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/cdefs.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/types.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/wordsize.h:
+
+/opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include/stddef.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/typesizes.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/pthreadtypes.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sched.h:
+
+/opt/buildroot-be-gcc434/usr/include/time.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/stat.h:
+
+/opt/buildroot-be-gcc434/usr/include/sgidefs.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/types.h:
+
+/opt/buildroot-be-gcc434/usr/include/endian.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/endian.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/select.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/select.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sigset.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/time.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/sysmacros.h:
+
+/opt/buildroot-be-gcc434/usr/include/unistd.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/posix_opt.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/confname.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/getopt.h:
+
+/opt/buildroot-be-gcc434/usr/include/string.h:
+
+/opt/buildroot-be-gcc434/usr/include/stdlib.h:
+
+/opt/buildroot-be-gcc434/usr/include/alloca.h:
+
+dirutil.h:

@@ -1,0 +1,96 @@
+# DO NOT DELETE THIS LINE -- mkdep uses it.
+# DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.
+
+
+#
+# files: -Wall -pipe -D__NO_CTYPE -DLinux -fomit-frame-pointer -pipe -D__linux__ -Dunix -DEMBED -funit-at-a-time -I/opt/buildroot-be-gcc434/usr/include -fPIC -funit-at-a-time -Os -DFOR_ATHEROS_PLATFORM=1 -DFOR_AR934x=1 -DFOR_AR955x=1 -DRUN_SYSTEM_AS_ROOT=1 -DSYSTEM_IS_LITTLE_ENDIAN=0 -DSYSTEM_IS_BIG_ENDIAN=1 -DUSE_UCLIB=1 -DTARGET=1 -I./include -I/ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include brctl.c
+# command: mips-linux-gnu3-gcc -M -Wall -pipe -D__NO_CTYPE -DLinux -fomit-frame-pointer -pipe -D__linux__ -Dunix -DEMBED -funit-at-a-time -I/opt/buildroot-be-gcc434/usr/include -fPIC -funit-at-a-time -Os -DFOR_ATHEROS_PLATFORM=1 -DFOR_AR934x=1 -DFOR_AR955x=1 -DRUN_SYSTEM_AS_ROOT=1 -DSYSTEM_IS_LITTLE_ENDIAN=0 -DSYSTEM_IS_BIG_ENDIAN=1 -DUSE_UCLIB=1 -DTARGET=1 -I./include -I/ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include brctl.c
+#
+
+brctl.o: brctl.c
+brctl.o: /opt/buildroot-be-gcc434/usr/include/stdio.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/features.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uClibc_config.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/cdefs.h
+brctl.o: /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include/stddef.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/types.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/wordsize.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/typesizes.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/pthreadtypes.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/sched.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uClibc_stdio.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/wchar.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/wchar.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uClibc_mutex.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/pthread.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sched.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/time.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/time.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uClibc_clk_tck.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/signal.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/sigset.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/initspin.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/sigthread.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uClibc_pthread.h
+brctl.o: /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include/stdarg.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/stdio_lim.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/stdlib.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/types.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/endian.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/endian.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/select.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/select.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/sysmacros.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/alloca.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/unistd.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/posix_opt.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/confname.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/getopt.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/ioctl.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/ioctls.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/ioctls.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/ioctl.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/ioctl.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/ioctl-types.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/ttydefaults.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/fcntl.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/fcntl.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sgidefs.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/errno.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/errno.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/errno.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/errno.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/errno-base.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/socket.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/sockios.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/sockios.h
+brctl.o: include/brctl.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/string.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/net/if.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/socket.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/sys/uio.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uio.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/socket.h
+brctl.o: /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include-fixed/limits.h
+brctl.o: /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include-fixed/syslimits.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/limits.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/posix1_lim.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/local_lim.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/limits.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/uClibc_local_lim.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/posix2_lim.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/bits/sockaddr.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/socket.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/if_bridge.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/types.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/types.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/int-ll64.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/bitsperlong.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/bitsperlong.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/posix_types.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/stddef.h
+brctl.o: /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/compiler.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/posix_types.h
+brctl.o: /opt/buildroot-be-gcc434/usr/include/asm/sgidefs.h
+
+# IF YOU PUT ANYTHING HERE IT WILL GO AWAY

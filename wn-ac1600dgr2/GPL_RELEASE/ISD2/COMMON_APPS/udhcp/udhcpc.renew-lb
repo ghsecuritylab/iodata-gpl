@@ -1,0 +1,31 @@
+#!/bin/sh
+
+RESOLV_CONF="/etc/resolv.conf"."$interface"
+GATEWAY_CONF="/etc/gateway.conf"."$interface"
+
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+
+/sbin/ifconfig $interface $ip $BROADCAST $NETMASK
+
+if [ -n "$router" ]
+then
+        echo "renewing  routers"
+
+        rm -f $GATEWAY_CONF
+
+        for i in $router
+        do
+                echo gateway $i >> $GATEWAY_CONF
+        done
+fi
+
+echo "renewing  $RESOLV_CONF"
+
+#echo -n > $RESOLV_CONF
+[ -n "$domain" ] && echo domain $domain >> $RESOLV_CONF
+for i in $dns
+do
+	echo adding dns $i
+	echo nameserver $i >> $RESOLV_CONF
+done

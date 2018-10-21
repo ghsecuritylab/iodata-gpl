@@ -1,0 +1,214 @@
+pptp_ctrl.lo: pptp_ctrl.c /opt/buildroot-be-gcc434/usr/include/errno.h \
+  /opt/buildroot-be-gcc434/usr/include/features.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/uClibc_config.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/cdefs.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/errno.h \
+  /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/errno.h \
+  /opt/buildroot-be-gcc434/usr/include/asm/errno.h \
+  /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/errno-base.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/time.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/types.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/wordsize.h \
+  /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include/stddef.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/typesizes.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/pthreadtypes.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sched.h \
+  /opt/buildroot-be-gcc434/usr/include/time.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/time.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/select.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/select.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sigset.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/types.h \
+  /opt/buildroot-be-gcc434/usr/include/endian.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/endian.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/sysmacros.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/socket.h \
+  /opt/buildroot-be-gcc434/usr/include/sys/uio.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/uio.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/socket.h \
+  /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include-fixed/limits.h \
+  /opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include-fixed/syslimits.h \
+  /opt/buildroot-be-gcc434/usr/include/limits.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/posix1_lim.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/local_lim.h \
+  /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/limits.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/uClibc_local_lim.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/posix2_lim.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sockaddr.h \
+  /opt/buildroot-be-gcc434/usr/include/asm/socket.h \
+  /opt/buildroot-be-gcc434/usr/include/asm/sockios.h \
+  /opt/buildroot-be-gcc434/usr/include/asm/ioctl.h \
+  /ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/ioctl.h \
+  /opt/buildroot-be-gcc434/usr/include/netinet/in.h \
+  /opt/buildroot-be-gcc434/usr/include/stdint.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/wchar.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/in.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/byteswap.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/byteswap-common.h \
+  /opt/buildroot-be-gcc434/usr/include/unistd.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/posix_opt.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/confname.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/getopt.h \
+  /opt/buildroot-be-gcc434/usr/include/stdlib.h \
+  /opt/buildroot-be-gcc434/usr/include/alloca.h \
+  /opt/buildroot-be-gcc434/usr/include/assert.h \
+  /opt/buildroot-be-gcc434/usr/include/signal.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/signum.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/siginfo.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sigaction.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sigcontext.h \
+  /opt/buildroot-be-gcc434/usr/include/sgidefs.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sigstack.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/sigthread.h \
+  /opt/buildroot-be-gcc434/usr/include/string.h \
+  /opt/buildroot-be-gcc434/usr/include/ctype.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/uClibc_touplow.h \
+  /opt/buildroot-be-gcc434/usr/include/fcntl.h \
+  /opt/buildroot-be-gcc434/usr/include/bits/fcntl.h pptp_msg.h \
+  pptp_ctrl.h pptp_options.h vector.h util.h pptp_quirks.h
+
+/opt/buildroot-be-gcc434/usr/include/errno.h:
+
+/opt/buildroot-be-gcc434/usr/include/features.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/uClibc_config.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/cdefs.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/errno.h:
+
+/ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/errno.h:
+
+/opt/buildroot-be-gcc434/usr/include/asm/errno.h:
+
+/ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/errno-base.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/time.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/types.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/wordsize.h:
+
+/opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include/stddef.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/typesizes.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/pthreadtypes.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sched.h:
+
+/opt/buildroot-be-gcc434/usr/include/time.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/time.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/select.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/select.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sigset.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/types.h:
+
+/opt/buildroot-be-gcc434/usr/include/endian.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/endian.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/sysmacros.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/socket.h:
+
+/opt/buildroot-be-gcc434/usr/include/sys/uio.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/uio.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/socket.h:
+
+/opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include-fixed/limits.h:
+
+/opt/toolchains/buildroot-be-gcc434-2013-0107/usr/bin/../lib/gcc/mips-unknown-linux-uclibc/4.3.4/include-fixed/syslimits.h:
+
+/opt/buildroot-be-gcc434/usr/include/limits.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/posix1_lim.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/local_lim.h:
+
+/ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/linux/limits.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/uClibc_local_lim.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/posix2_lim.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sockaddr.h:
+
+/opt/buildroot-be-gcc434/usr/include/asm/socket.h:
+
+/opt/buildroot-be-gcc434/usr/include/asm/sockios.h:
+
+/opt/buildroot-be-gcc434/usr/include/asm/ioctl.h:
+
+/ISD2/ATHEROS_LSDK_KNL/linux-2.6.31/include/asm-generic/ioctl.h:
+
+/opt/buildroot-be-gcc434/usr/include/netinet/in.h:
+
+/opt/buildroot-be-gcc434/usr/include/stdint.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/wchar.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/in.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/byteswap.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/byteswap-common.h:
+
+/opt/buildroot-be-gcc434/usr/include/unistd.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/posix_opt.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/confname.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/getopt.h:
+
+/opt/buildroot-be-gcc434/usr/include/stdlib.h:
+
+/opt/buildroot-be-gcc434/usr/include/alloca.h:
+
+/opt/buildroot-be-gcc434/usr/include/assert.h:
+
+/opt/buildroot-be-gcc434/usr/include/signal.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/signum.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/siginfo.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sigaction.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sigcontext.h:
+
+/opt/buildroot-be-gcc434/usr/include/sgidefs.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sigstack.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/sigthread.h:
+
+/opt/buildroot-be-gcc434/usr/include/string.h:
+
+/opt/buildroot-be-gcc434/usr/include/ctype.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/uClibc_touplow.h:
+
+/opt/buildroot-be-gcc434/usr/include/fcntl.h:
+
+/opt/buildroot-be-gcc434/usr/include/bits/fcntl.h:
+
+pptp_msg.h:
+
+pptp_ctrl.h:
+
+pptp_options.h:
+
+vector.h:
+
+util.h:
+
+pptp_quirks.h:

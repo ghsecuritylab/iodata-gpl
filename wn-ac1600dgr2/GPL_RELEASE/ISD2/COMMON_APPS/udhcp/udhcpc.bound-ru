@@ -1,0 +1,36 @@
+#!/bin/sh
+
+RESOLV_CONF="/etc/resolv.conf"
+RESOLV_RU_CONF="/etc/resolv.conf"."$interface"
+GATEWAY_RU_CONF="/etc/gateway.conf"."$interface"
+
+[ -n "$broadcast" ] && BROADCAST="broadcast $broadcast"
+[ -n "$subnet" ] && NETMASK="netmask $subnet"
+
+/sbin/ifconfig $interface $ip $BROADCAST $NETMASK
+
+if [ -n "$router" ]
+then
+	echo "deleting routers"
+	while /sbin/route del default gw 0.0.0.0 dev $interface
+	do :
+	done
+
+	for i in $router
+	do
+		/sbin/route add default gw $i dev $interface
+		echo gateway $i > $GATEWAY_RU_CONF
+	done
+fi
+
+echo -n > $RESOLV_CONF
+[ -n "$domain" ] && echo domain $domain >> $RESOLV_CONF
+for i in $dns
+do
+	echo adding dns $i
+	echo nameserver $i >> $RESOLV_CONF
+	/sbin/route add -net $i netmask 255.255.255.255 dev $interface
+done
+	cp $RESOLV_CONF $RESOLV_RU_CONF
+	sysconf_cli ppp_inform ppp-ru-connect &
+	

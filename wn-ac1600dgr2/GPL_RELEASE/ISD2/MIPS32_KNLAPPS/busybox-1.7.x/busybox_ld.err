@@ -1,0 +1,6 @@
+coreutils/lib.a(touch.o): In function `touch_main':
+touch.c:(.text.touch_main+0xa0): warning: the use of OBSOLESCENT `utime' is discouraged, use `utimes'
+libbb/lib.a(inet_common.o): In function `INET_rresolve':
+inet_common.c:(.text.INET_rresolve+0x144): warning: gethostbyaddr is obsolescent, use getaddrinfo() instead.
+libbb/lib.a(inet_common.o): In function `INET_resolve':
+inet_common.c:(.text.INET_resolve+0x78): warning: gethostbyname is obsolescent, use getnameinfo() instead.

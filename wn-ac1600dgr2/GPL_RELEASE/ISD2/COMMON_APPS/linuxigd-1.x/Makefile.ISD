@@ -1,0 +1,96 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+
+#cfho 2010-0707, the DeleteAllPortMappings() is called when the application is terminated or on reciving the USR1 signal. We do not issue USR1 signal to this application. The sysconfd may ternimate this applcation when firewall is reloaded. Once the firewall is reloaded, the IPTABLES will be reloaded first, so, it is no needed to DeleteAllPortMappings().
+
+EXTRA_CFLAGS+=-DHAS_DELETE_ALL_PORT_MAPPINGS=0 -DHAVE_CLOCK_GETTIME -DUSE_MYGETTIMEOFDAY
+
+ifdef CONFIG_LIBUPNPD_THREAD_IDLE_TIME
+EXTRA_CFLAGS += -DNEW_THREAD_IDLE_TIME=$(CONFIG_LIBUPNPD_THREAD_IDLE_TIME)
+endif
+
+ifdef CONFIG_LIBUPNPD_JOBS_PER_THREAD
+EXTRA_CFLAGS += -DNEW_JOBS_PER_THREAD=$(CONFIG_LIBUPNPD_JOBS_PER_THREAD)
+endif
+
+ifdef CONFIG_LIBUPNPD_MIN_THREADS
+EXTRA_CFLAGS += -DNEW_MIN_THREADS=$(CONFIG_LIBUPNPD_MIN_THREADS)
+endif
+
+ifdef CONFIG_LIBUPNPD_MAX_THREADS
+EXTRA_CFLAGS += -DNEW_MAX_THREADS=$(CONFIG_LIBUPNPD_MAX_THREADS)
+endif
+
+ifeq ($(CONFIG_HAS_OFFLINE_DOWNLOAD), y)
+EXTRA_CFLAGS += -DHAS_OFFLINE_DOWNLOAD=1
+endif
+
+ifeq ($(CONFIG_HAS_UPNP_API), y)
+EXTRA_CFLAGS += -DHAS_UPNP_API=1
+endif
+
+ifeq ($(CONFIG_HAS_MBRIDGE_CONTROL), y)
+EXTRA_CFLAGS += -DHAS_MBRIDGE_CONTROL=1
+endif
+
+ifdef CONFIG_UPNPD_MAX_PORTMAPPING_LIMIT
+EXTRA_CFLAGS += -DUPNPD_MAX_PORTMAPPING_LIMIT=$(CONFIG_UPNPD_MAX_PORTMAPPING_LIMIT)
+else
+# Max portmapping limit default 2000
+EXTRA_CFLAGS += -DUPNPD_MAX_PORTMAPPING_LIMIT=2000
+endif
+
+ifeq ($(CONFIG_HAS_IO_REMOTE_ACCESS_FUNC),y)
+EXTRA_CFLAGS += -DHAS_IO_REMOTE_ACCESS_FUNC=1
+endif
+
+all:	build
+
+init:
+
+clean:
+	$(MAKE) CROSS=$(CROSS) $(MAKE_FLAGS) -f Makefile clean
+
+build:	
+	$(MAKE) CROSS=$(CROSS) $(MAKE_FLAGS) \
+	CONFIG_HAS_UPNP_API=$(CONFIG_HAS_UPNP_API) \
+	CONFIG_HAS_MBRIDGE_CONTROL=$(CONFIG_HAS_MBRIDGE_CONTROL) \
+	CFLAGS="$(EXTRA_CFLAGS) -DHAS_DEBUG=0 -DHAS_SYSLOG=0"  \
+	CROSS_LIB_DIR=$(CROSS_LIB_DIR) -f Makefile
+	$(STRIP) upnpd
+	ls -al upnpd
+
+install_check:
+	if [ ! -e upnpd ]; then \
+		false; \
+	fi
+
+ifneq ($(PREFIX_DIR),)
+TARGET_APP_DIR=$(PREFIX_DIR)
+endif
+
+ETC_DIR=./etc_sitecom
+
+ifeq ($(CONFIG_HAS_MBRIDGE_CONTROL),y)
+ETC_VENDOR_DIR=./etc_Denon_Marantz
+endif
+
+install: install_check
+	install -c upnpd $(TARGET_APP_DIR)/sbin;
+	mkdir -p $(TARGET_APP_DIR)/etc/linuxigd;
+	install -m755 $(ETC_DIR)/*.xml $(TARGET_APP_DIR)/etc/linuxigd;
+	install -m755 $(ETC_DIR)/ligd.gif $(TARGET_APP_DIR)/etc/linuxigd;
+ifneq ($(ETC_VENDOR_DIR),)
+	install -m755 $(ETC_VENDOR_DIR)/*.xml $(TARGET_APP_DIR)/etc/linuxigd;
+	install -m755 $(ETC_VENDOR_DIR)/*.sh $(TARGET_APP_DIR)/sbin/;
+endif

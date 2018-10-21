@@ -1,0 +1,8 @@
+# $Id: //depot/sw/qca_main/components/os/linux-2.6.31/1.0/arch/xtensa/platforms/iss/Makefile#1 $
+#
+# Makefile for the Xtensa Instruction Set Simulator (ISS)
+# "prom monitor" library routines under Linux.
+#
+
+obj-y			= io.o console.o setup.o network.o
+

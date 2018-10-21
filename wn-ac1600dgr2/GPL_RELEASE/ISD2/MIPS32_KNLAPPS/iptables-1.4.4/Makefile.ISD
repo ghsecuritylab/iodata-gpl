@@ -1,0 +1,147 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+ifeq ($(CONFIG_IPTABLES_SUPPORT_IPV6),y)
+SUPPORT_IPV6=yes
+else
+SUPPORT_IPV6=no
+endif
+
+ifeq ($(CONFIG_IPTABLES_USE_SHARED_EXTENSIONS),y)
+SUPPORT_SHARED_EXT=yes
+IPT_EXT_OBJS = libiptc/.libs/libiptc.so.0 .libs/libxtables.so.2
+IPT_EXT_OBJS += $(addsuffix .so, $(addprefix extensions/libipt_, $(IPTABLES_PF_EXT_LIBIPT_LIST)))
+IPT_EXT_OBJS += $(addsuffix .so, $(addprefix extensions/libxt_, $(IPTABLES_PF_EXT_LIBXT_LIST)))
+else
+SUPPORT_SHARED_EXT=no
+endif
+
+
+EXTRA_CFLAGS += -I$(TOP_DIR)/configs/h
+
+MY_OPT_FLAGS=$(EXTRA_CFLAGS) -DHAS_IPTABLES_SAVE=0 -DHAS_IPTABLES_HELP=0 \
+		-DHAS_IPTABLES_PRINT=0 -DHAS_IPTABLES_COMPAT_REVISION=0 \
+		-DHAS_IPTABLES_ALL_COMMAND=0 -DIPTABLE_WITHOUT_LIBMATH
+
+ifeq ($(IPTABLES_BLACKLIST_MODULES),)
+BLACKLIST_MODULES = \
+	cluster comment connbytes connlimit connmark CONNMARK CONNSECMARK \
+	dccp dscp DSCP esp helper NFQUEUE NOTRACK owner tos TOS TPROXY \
+	multiport NFLOG pkttype quota rateest RATEEST recent sctp SECMARK \
+	socket statistic TCPOPTSTRIP TRACE u32 addrtype ah CLUSTERIP \
+	ecn ECN MIRROR NETMAP realm REDIRECT SAME set SET ttl TTL \
+	unclean conntrack hashlimit physdev policy tcpmss \
+	weburl ULOG time
+else
+BLACKLIST_MODULES = $(IPTABLES_BLACKLIST_MODULES)
+endif
+
+
+.PHONY:	all init clean build distclean install
+
+all:	clean build
+
+init0:
+	touch aclocal.m4  configure configure.ac
+	if [ -e configure ]; then \
+	CC="$(CC)" \
+	CFLAGS="$(MY_OPT_FLAGS)" \
+	LDFLAGS="$(EXTRA_LDFLAGS)" \
+	ac_cv_linux_vers=$(KERNEL_HEADERS_INCLUDE) \
+	blacklist_modules="$(BLACKLIST_MODULES) " \
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) \
+	--with-kernel=-I$(KERNEL_FULL_DIR) \
+	--prefix=/ --enable-static --enable-shared=$(SUPPORT_SHARED_EXT) \
+	--program-prefix=""  --program-suffix="" \
+	--enable-ipv6=$(SUPPORT_IPV6);\
+	fi
+
+#cfho 2010-0804, some of them are not removed because we will get "segment fault"
+#	skip_modules="cluster comment connbytes connlimit connmark CONNMARK CONNSECMARK  dccp dscp DSCP esp hashlimit helper MARK NFQUEUE NOTRACK owner pkttype quota rateest RATEEST recent sctp SECMARK socket statistic TCPOPTSTRIP time TRACE u32 addrtype ah CLUSTERIP ecn ECN MIRROR NETMAP realm REDIRECT SAME set SET ttl TTL ULOG unclean" \
+
+init:	init0
+	chmod 755 extensions/.*
+
+
+clean:
+	if [ -e Makefile ]; then \
+		$(MAKE)  -f Makefile clean; \
+	fi ;\
+	$(RM) Makefile iptables
+	find -name "*\.Po"|xargs rm -rf
+	find -name "*\.Plo"|xargs rm -rf
+	find -name "*\.d" |xargs rm -rf
+	find -name "*.0" |xargs rm -rf
+	find -name "*.deps" |xargs rm -rf
+	find ./ -name "*.dd"|xargs rm -rf
+
+
+build:	init
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CC=$(CC) \
+	CFLAGS="$(MY_OPT_FLAGS)" \
+	TOP_DIR="$(TOP_DIR)" \
+	KERNEL_DIR=$(KERNEL_FULL_DIR) all 
+ifeq ($(CONFIG_IPTABLES_USE_SHARED_EXTENSIONS),y)
+	mv .libs/iptables ./iptables
+ifeq ($(CONFIG_IPTABLES_SUPPORT_IPV6),y)
+	mv .libs/ip6tables ./ip6tables
+endif
+else
+	mv iptables-static iptables
+ifeq ($(CONFIG_IPTABLES_SUPPORT_IPV6),y)
+	mv ip6tables-static ip6tables
+endif
+endif
+	$(STRIP) iptables
+	cp iptables /tftpboot
+	ls -al /tftpboot/iptables
+
+distclean:
+	$(MAKE) $(MAKE_FLAGS) -f Makefile distclean
+
+install_check:
+ifneq ($(CONFIG_HAS_IP6TABLES_ONLY),y)
+	if [ ! -e iptables ]; then \
+		false; \
+	else \
+		mkdir -p $(TARGET_APP_DIR)/sbin; \
+	fi
+endif
+	
+ifeq ($(CONFIG_IPTABLES_SUPPORT_IPV6),y)
+	if [ ! -e ip6tables ]; then \
+		false; \
+	else \
+		mkdir -p $(TARGET_APP_DIR)/sbin; \
+	fi
+endif
+
+install: install_check
+ifneq ($(CONFIG_HAS_IP6TABLES_ONLY),y)
+ifneq ($(PREFIX_DIR),)
+	install -c iptables  $(PREFIX_DIR)/sbin; 
+ifeq ($(CONFIG_IPTABLES_USE_SHARED_EXTENSIONS),y)
+	install -c $(IPT_EXT_OBJS) $(PREFIX_DIR)/lib;
+endif
+else
+	install -c iptables  $(TARGET_APP_DIR)/sbin ;
+ifeq ($(CONFIG_IPTABLES_USE_SHARED_EXTENSIONS),y)
+	install -c $(IPT_EXT_OBJS) $(TARGET_APP_DIR)/lib;
+endif
+endif
+endif
+
+ifeq ($(CONFIG_IPTABLES_SUPPORT_IPV6),y)
+ifneq ($(PREFIX_DIR),)
+	install -c ip6tables  $(PREFIX_DIR)/sbin/ip6tables; 
+else
+	install -c ip6tables  $(TARGET_APP_DIR)/sbin/ip6tables;
+endif
+endif

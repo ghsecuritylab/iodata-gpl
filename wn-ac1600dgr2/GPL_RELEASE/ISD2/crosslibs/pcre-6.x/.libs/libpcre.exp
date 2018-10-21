@@ -1,0 +1,11 @@
+pcre_callout
+pcre_compile
+pcre_compile2
+pcre_exec
+pcre_free
+pcre_fullinfo
+pcre_info
+pcre_malloc
+pcre_stack_free
+pcre_stack_malloc
+pcre_study

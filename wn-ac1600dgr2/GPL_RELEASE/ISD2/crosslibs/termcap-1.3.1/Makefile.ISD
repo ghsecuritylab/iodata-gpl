@@ -1,0 +1,46 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean-toolchain clean build distclean install
+INSTALL_LIBS= libtermcap.so
+INSTALL_INCLUDES=termcap.h
+
+all:	build
+
+init:
+	 
+clean-toolchain:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build:	init
+	$(MAKE) -f Makefile CROSS=$(CROSS) EXTRA_CFLAGS="$(EXTRA_CFLAGS)" EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)"
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+
+
+install_libs:
+ifneq ($(INSTALL_LIBS),)
+	for d in $(INSTALL_LIBS); do \
+		(if [ ! -e ./$$d ]; then false; else install -c ./$$d $(CROSS_LIB_DIR); fi;); \
+	done;
+endif
+
+install_includes:
+ifneq ($(INSTALL_LIBS),)
+	for d in $(INSTALL_INCLUDES); do \
+		(if [ ! -e ./$$d ]; then false; else install -c ./$$d $(CROSS_INCLUDE_DIR); fi;); \
+	done;
+endif
+
+install: install_libs install_includes

@@ -1,0 +1,50 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean-toolchain clean build distclean install
+
+ifeq ("$(SYSTEM_IS_LITTLE_ENDIAN)", "yes")
+EXTRA_CFLAGS+=-D__BYTE_ORDER=__LITTLE_ENDIAN
+else
+EXTRA_CFLAGS+=-D__BYTE_ORDER=__BIG_ENDIAN
+endif
+
+all:	build
+
+init:
+	chmod 777 configure; \
+	ac_cv_sys_restartable_syscalls=yes \
+	ac_cv_func_setvbuf_reversed=yes \
+	CC=$(CC) \
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) \
+	--enable-dependency-tracking \
+	--prefix=$(CROSS_DIR)  
+
+clean-toolchain:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build: init	
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CC=$(CC) CFLAGS="$(EXTRA_CFLAGS) -DNO_DEBUG=1"
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_lib_a:
+	install -c ./libusb/.libs/libusb-1.0.a $(CROSS_LIB_DIR)
+
+install: install_lib_a
+	install -c ./libusb/.libs/libusb-1.0.so $(CROSS_LIB_DIR); \
+	install -c ./libusb/libusb.h $(CROSS_INCLUDE_DIR); \
+	cd $(CROSS_LIB_DIR); \
+	ln -s -f libusb-1.0.so libusb.so; \
+	ln -s -f libusb-1.0.so libusb.so.1; \
+	ln -s -f libusb-1.0.so libusb-1.0.so.0; \

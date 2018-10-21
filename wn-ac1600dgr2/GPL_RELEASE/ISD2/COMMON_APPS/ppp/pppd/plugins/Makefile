@@ -1,0 +1,40 @@
+COPTS	= -O2 -g $(EXTRA_CFLAGS)
+CFLAGS	= $(COPTS) -I.. -I../../include -fPIC
+LDFLAGS	= -shared $(EXTRA_LDFLAGS)
+INSTALL	= install
+
+DESTDIR = /usr/local
+BINDIR = $(DESTDIR)/sbin
+MANDIR = $(DESTDIR)/share/man/man8
+LIBDIR = $(DESTDIR)/lib/pppd/$(VERSION)
+
+SUBDIRS := rp-pppoe pppoatm radius
+# Uncomment the next line to include the radius authentication plugin
+# SUBDIRS += radius
+PLUGINS := minconn.so passprompt.so passwordfd.so winbind.so
+
+# include dependencies if present
+ifeq (.depend,$(wildcard .depend))
+include .depend
+endif
+
+all:	$(PLUGINS)
+	for d in $(SUBDIRS); do $(MAKE) $(MFLAGS) -C $$d all; done
+
+%.so: %.c
+	$(CC) -o $@ $(LDFLAGS) $(CFLAGS) $^
+
+VERSION = $(shell awk -F '"' '/VERSION/ { print $$2; }' ../patchlevel.h)
+
+install: $(PLUGINS)
+	$(INSTALL) -d $(LIBDIR)
+	$(INSTALL) $? $(LIBDIR)
+	for d in $(SUBDIRS); do $(MAKE) $(MFLAGS) -C $$d install; done
+
+clean:
+	rm -f *.o *.so *.a
+	for d in $(SUBDIRS); do $(MAKE) $(MFLAGS) -C $$d clean; done
+
+depend:
+	$(CPP) -M $(CFLAGS) *.c >.depend
+	for d in $(SUBDIRS); do $(MAKE) $(MFLAGS) -C $$d depend; done

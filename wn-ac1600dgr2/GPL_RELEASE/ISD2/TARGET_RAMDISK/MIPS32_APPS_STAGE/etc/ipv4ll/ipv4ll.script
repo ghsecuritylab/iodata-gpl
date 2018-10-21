@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec /etc/ipv4ll/ipv4ll.$1

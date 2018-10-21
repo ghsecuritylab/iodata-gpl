@@ -1,0 +1,3 @@
+echo pppoe-lost!
+sysconf_cli pppoelost
+

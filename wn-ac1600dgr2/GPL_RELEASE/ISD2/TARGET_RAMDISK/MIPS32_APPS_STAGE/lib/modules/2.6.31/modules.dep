@@ -1,0 +1,78 @@
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_arp.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_ulog.ko:	
+
+/lib/modules/sxuptp/wq/sxuptp_wq.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/usb/storage/usb-storage.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/usb/class/usblp.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/input/serio/libps2.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_pkttype.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_redirect.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_among.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_arpreply.ko:	
+
+/lib/modules/2.6.31/kernel/net/ipv4/tcp_bic.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_dnat.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_log.ko:	
+
+/lib/modules/2.6.31/kernel/net/ipv4/tcp_htcp.ko:	
+
+:	/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtables.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_mark_m.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_vlan.ko:	
+
+/lib/modules/sxuptp/daemon/sxuptp_devfilter.ko:	/lib/modules/sxuptp/daemon/sxuptp.ko
+
+/lib/modules/2.6.31/kernel/net/ipv4/netfilter/nf_nat_h323.ko:	/lib/modules/2.6.31/kernel/net/netfilter/nf_conntrack_h323.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_802_3.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/scsi/scsi_wait_scan.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_mark.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_snat.ko:	
+
+/lib/modules/sxuptp/drivers/sxuptp_driver.ko:	/lib/modules/sxuptp/daemon/sxuptp.ko
+
+/lib/modules/2.6.31/kernel/drivers/net/usb/cdc_ether.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/input/serio/i8042.ko:	/lib/modules/2.6.31/kernel/drivers/input/serio/serio.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtables.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtable_filter.ko:	/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtables.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_limit.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/input/serio/serport.ko:	/lib/modules/2.6.31/kernel/drivers/input/serio/serio.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_nflog.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_ip.ko:	
+
+/lib/modules/2.6.31/kernel/net/netfilter/nf_conntrack_h323.ko:	
+
+/lib/modules/2.6.31/kernel/net/ipv4/tcp_westwood.ko:	
+
+/lib/modules/2.6.31/kernel/drivers/input/serio/serio.ko:	
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtable_nat.ko:	/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtables.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtable_broute.ko:	/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebtables.ko
+
+/lib/modules/2.6.31/kernel/net/bridge/netfilter/ebt_stp.ko:	
+
+/lib/modules/sxuptp/daemon/sxuptp.ko:	/lib/modules/sxuptp/wq/sxuptp_wq.ko
+

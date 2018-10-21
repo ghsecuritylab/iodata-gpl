@@ -1,0 +1,42 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install fixfilemod 
+
+all: build 
+
+init:
+ 
+clean:
+	$(MAKE) -f Makefile clean; \
+	$(RM) byteorder
+	
+#$(MAKE_FLAGS) 
+
+build: 
+	(cd src; $(MAKE) -f Makefile CROSS=$(CROSS) \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS) -D__LITTLE_ENDIAN_BITFIELD=1" \
+	LDFLAGS="$(EXTRA_LDFLAGS)" all)
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_check:
+	if [ ! -e src/igmpproxy ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c src/igmpproxy  $(PREFIX_DIR)/sbin; 
+else
+	install -c src/igmpproxy $(TARGET_APP_DIR)/sbin ;
+endif
+

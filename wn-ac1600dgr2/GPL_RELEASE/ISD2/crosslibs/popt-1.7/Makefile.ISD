@@ -1,0 +1,49 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean-toolchain clean build distclean install
+INSTALL_LIBS= libpopt.so 
+LIBS_VER =.0.0.0
+all: build
+
+init:
+	if [ ! -e configure ] ; then \
+	touch config.rpath; \
+	sh autogen.sh --noconfigure; \
+	fi
+	if [ ! -e .lib/libpopt.so ]; then \
+	ac_cv_sys_restartable_syscalls=yes \
+	ac_cv_func_setvbuf_reversed=yes \
+	CC=$(CC) \
+	CFLAGS="$(EXTRA_CFLAGS)" \
+	LDFLAGS="$(EXTRA_LDFLAGS)" \
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) \
+	--enable-shared --with-included-gettext --prefix=$(CROSS_DIR); \
+	fi
+
+clean-toolchain:
+
+clean:
+	if [ -e Makefile ]; then \
+		$(MAKE) -f Makefile clean; \
+	fi
+
+build: init
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CFLAGS="$(EXTRA_CFLAGS)"
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install:
+	install -c popt.h ./intl/libintl.h $(CROSS_INCLUDE_DIR); \
+	install -c .libs/libpopt.so.0.0.0 ./intl/libintl.a ./.libs/libpopt.a $(CROSS_LIB_DIR); \
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libpopt.so.0.0.0 libpopt.so.0 || { rm -f libpopt.so.0 && ln -s libpopt.so.0.0.0 libpopt.so.0; }; }); \
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libpopt.so.0.0.0 libpopt.so || { rm -f libpopt.so && ln -s libpopt.so.0.0.0 libpopt.so; }; });        
+

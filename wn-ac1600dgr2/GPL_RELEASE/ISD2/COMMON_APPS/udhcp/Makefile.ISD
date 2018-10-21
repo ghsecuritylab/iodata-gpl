@@ -1,0 +1,164 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+MY_CFLAGS = $(EXTRA_CFLAGS) -I$(KERNEL_FULL_DIR) #-I$(TOP_DIR)/configs/h/ -I$(APPS_FULL_DIR)/h 
+MY_LDFLAGS = $(EXTRA_LDFLAGS) 
+#MY_CFLAGS+= -DUDHCP_DEBUG=1
+
+ifeq ($(CONFIG_HAS_ATH_ETHERNET_SWITCH),y)
+MY_CFLAGS += -DHAS_ATH_ETHERNET_SWITCH=1
+ifeq ($(CONFIG_HAS_ATH_ETHERNET_SWITCH_S17),y)
+MY_CFLAGS += -DHAS_ATH_ETHERNET_SWITCH_S17=1
+endif
+ifeq ($(CONFIG_HAS_ATH_ETHERNET_SWITCH_S26),y)
+MY_CFLAGS += -DHAS_ATH_ETHERNET_SWITCH_S26=1
+endif
+ifeq ($(CONFIG_HAS_ATH_ETHERNET_SWITCH_S27),y)
+MY_CFLAGS += -DHAS_ATH_ETHERNET_SWITCH_S27=1
+endif
+ifeq ($(CONFIG_HAS_ATH_ETHERNET_SWITCH_S17_HWACCEL),y)
+MY_CFLAGS += -DHAS_ATH_ETHERNET_SWITCH_S17_HWACCEL=1
+endif
+export DHCPC_LIBS += $(SYSUTIL_LIBS)
+endif
+
+ifeq ($(CONFIG_DHCPD_HAS_HOSTNAME),y)
+MY_CFLAGS +=-DHAS_DHCP_HOST_FUNCTION=1
+endif
+ifeq ($(CONFIG_DHCPD_HAS_IP2HOSTNAME),y)
+MY_CFLAGS +=-DHAS_DHCP_IP2HOSTNAME=1
+endif
+ifeq ($(CONFIG_DHCPD_HAS_CLIENT_IFNAME),y)
+MY_CFLAGS +=-DHAS_DHCPD_IF_INFOMATION_FUNCTION=1
+endif
+
+ifeq ($(CONFIG_HAS_TR_AGENT),y)
+MY_CFLAGS += -DHAS_TR_AGENT=1
+endif
+
+ifeq ($(CONFIG_HAS_WAN_WIMAX),y)
+MY_CFLAGS +=-DHAS_WAN_WIMAX=1
+endif
+
+ifeq ($(CONFIG_WAN_AT_P4),y)
+MY_CFLAGS +=-DWAN_AT_P4=1
+endif
+
+ifeq ($(CONFIG_WAN_AT_P3),y)
+MY_CFLAGS +=-DWAN_AT_P3=1
+endif
+
+ifeq ($(CONFIG_WAN_AT_P7),y)
+MY_CFLAGS +=-DWAN_AT_P7=1
+endif
+
+ifeq ($(CONFIG_WAN_AT_P1),y)
+MY_CFLAGS +=-DWAN_AT_P1=1
+endif
+
+ifeq ($(CONFIG_HAS_MULTIPLE_WAN),y)
+MY_CFLAGS +=-DHAS_MULTIPLE_WAN=1
+endif
+
+ifeq ($(CONFIG_DHCP_CLIENT_USE_SCRIPT_FILE),y)
+MY_CFLAGS +=-DDHCP_CLIENT_USE_SCRIPT_FILE=1
+endif
+
+ifeq ($(CONFIG_HAS_NETBIOS_FUNCTION),y)
+MY_CFLAGS += -DHAS_NETBIOS_FUNCTION=1
+endif
+
+ifeq ($(CONFIG_HAS_FIXED_MANAGEMENT_IP_IN_AP_MODE),y)
+MY_CFLAGS += -DHAS_FIXED_MANAGEMENT_IP_IN_AP_MODE=1
+endif
+
+ifeq ($(CONFIG_SUPPORT_IPV6_6RD),y)
+MY_CFLAGS +=-DSUPPORT_IPV6_6RD=1
+endif
+
+MY_CFLAGS +=-DHAS_GRAT_ARP=1
+
+.PHONY:	all init clean build distclean install
+
+all:	build copy2tftpboot
+
+init:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build:	init
+	$(MAKE) $(MAKE_FLAGS) -f Makefile \
+	CROSS_COMPILE=$(CROSS) \
+	EXTRA_CFLAGS="$(MY_CFLAGS)" \
+	PREFIX=$(TARGET_APP_DIR) \
+	LDFLAGS="$(MY_LDFLAGS)"
+
+copy2tftpboot:
+	install udhcpc /tftpboot
+	ls -al /tftpboot/udhcpc
+
+distclean:
+	$(MAKE) -f Makefile clean
+
+install_check:
+	if [ ! -e udhcpc ] ; then \
+		false; \
+	fi
+ 
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	mkdir -p $(PREFIX_DIR)/etc/udhcpc;
+	mkdir -p $(PREFIX_DIR)/sbin;
+	install -c udhcpc $(PREFIX_DIR)/sbin; 
+#	install -c udhcpd $(PREFIX_DIR)/sbin; 
+	install -c dumpleases $(PREFIX_DIR)/sbin;
+#	install -c udhcpc.renew-lb $(PREFIX_DIR)/etc/udhcpc; 
+#	install -c udhcpc.bound-lb $(PREFIX_DIR)/etc/udhcpc; 
+	install -c udhcpc.renew $(PREFIX_DIR)/etc/udhcpc; 
+	install -c udhcpc.bound $(PREFIX_DIR)/etc/udhcpc;
+	install -c udhcpc.script $(PREFIX_DIR)/etc/udhcpc;
+	install -c udhcpc.deconfig $(PREFIX_DIR)/etc/udhcpc;
+	install -c udhcpc.simple $(PREFIX_DIR)/etc/udhcpc; 
+ifeq ($(CONFIG_RUSSIAN_DUAL_ACCESS),y)
+	install -c udhcpc.renew-ru $(PREFIX_DIR)/etc/udhcpc; 
+	install -c udhcpc.bound-ru $(PREFIX_DIR)/etc/udhcpc; 
+endif
+ifeq ($(CONFIG_PPPOE_JAPAN),y)
+	cp udhcpc.renew-lb $(TARGET_APP_DIR)/etc/udhcpc/udhcpc.renew;
+	cp udhcpc.bound-lb $(TARGET_APP_DIR)/etc/udhcpc/udhcpc.bound;
+endif
+else
+	mkdir -p $(TARGET_APP_DIR)/etc/udhcpc;
+	mkdir -p $(PREFIX_DIR)/sbin;
+	install -c udhcpc $(TARGET_APP_DIR)/sbin; 
+#	install -c udhcpd $(TARGET_APP_DIR)/sbin;
+	install -c dumpleases $(TARGET_APP_DIR)/sbin; 
+#	install -c udhcpc.renew-lb $(TARGET_APP_DIR)/etc/udhcpc;
+#	install -c udhcpc.bound-lb $(TARGET_APP_DIR)/etc/udhcpc;
+	install -c udhcpc.renew $(TARGET_APP_DIR)/etc/udhcpc;
+	install -c udhcpc.bound $(TARGET_APP_DIR)/etc/udhcpc;
+	install -c udhcpc.script $(TARGET_APP_DIR)/etc/udhcpc; 
+	install -c udhcpc.deconfig $(PREFIX_DIR)/etc/udhcpc;
+ifeq ($(CONFIG_RUSSIAN_DUAL_ACCESS),y)
+	install -c udhcpc.renew-ru $(TARGET_APP_DIR)/etc/udhcpc;
+	install -c udhcpc.bound-ru $(TARGET_APP_DIR)/etc/udhcpc;
+endif
+ifeq ($(CONFIG_PPPOE_JAPAN),y)
+	cp udhcpc.renew-lb $(TARGET_APP_DIR)/etc/udhcpc/udhcpc.renew;
+	cp udhcpc.bound-lb $(TARGET_APP_DIR)/etc/udhcpc/udhcpc.bound;
+endif
+endif
+
+
+ifeq ($(CONFIG_ONLY_DUMPLEASE),y)
+	rm -rf $(TARGET_APP_DIR)/etc/udhcpc
+	rm -rf $(TARGET_APP_DIR)/sbin/udhcpc
+endif

@@ -1,0 +1,5 @@
+console::sysinit:/sbin/config_init
+ttyS0::respawn:/sbin/config_term
+::ctrlaltdel:/etc/reboot.sh
+::shutdown:/etc/reboot.sh
+::shutdown:/etc/reboot.sh /sbin/swapoff -a

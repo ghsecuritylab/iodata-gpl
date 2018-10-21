@@ -1,0 +1,16 @@
+/Makefile
+/autoconfig.h
+/docs/dist/Makefile
+/ixml/Makefile
+/ixml/doc/Makefile
+/libtool
+/stamp-h1
+/threadutil/Makefile
+/upnp/Makefile
+/upnp/doc/Makefile
+/upnp/inc/stamp-h2
+/upnp/inc/upnpconfig.h
+/upnp/sample/Makefile
+/upnp/sample/upnp_tv_combo
+/upnp/sample/upnp_tv_ctrlpt
+/upnp/sample/upnp_tv_device

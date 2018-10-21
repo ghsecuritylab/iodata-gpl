@@ -1,0 +1,51 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install fixfilemod 
+
+ifeq ($(KERNEL_VER),2.6.36)
+EXTRA_CFLAGS += -D__EXPORTED_HEADERS__ -I$(KERNEL_FULL_DIR)/arch/$(ARCH)/include
+endif
+
+all: build
+
+init:
+	find . -name "*.sh" |xargs chmod 755; \
+	find . -name "*.pl" |xargs chmod 755; \
+	find . -name "configure" |xargs chmod 755; \
+	CC=$(CC) \
+	KDIR=$(KERNEL_FULL_DIR) \
+	ac_cv_lib_c_gettext=yes \
+	CFLAGS="$(EXTRA_CFLAGS)" \
+	LDFLAGS="$(EXTRA_LDFLAGS)" \
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) --enable-readline --prefix=/  ; 
+
+clean:
+	if [ -e Makefile ]; then \
+	$(MAKE) -f Makefile distclean; \
+	fi
+
+build: init
+	$(MAKE) -f Makefile EXTRA_CFLAGS="$(EXTRA_CFLAGS) -DCHAPMS=1 -DUSE_CRYPT=1" CROSS=$(CROSS)
+
+distclean:
+	if [ -e Makefile ]; then \
+	$(MAKE) -f Makefile distclean; \
+	fi
+
+install:
+	install -c pptpd $(TARGET_APP_DIR)/sbin;
+	install -c pptpctrl $(TARGET_APP_DIR)/sbin;
+ifeq ($(CONFIG_HAS_VPN_PPTP_BCRELAY),y)
+	install -c bcrelay $(TARGET_APP_DIR)/sbin;
+endif
+
+
+

@@ -1,0 +1,57 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install fixfilemod 
+
+# TODO: we may use kernel version.
+ifeq ($(ARCH), ubicom32)
+EXTRA_CFLAGS += -I$(KERNEL_FULL_DIR)/arch/$(ARCH)/include
+endif
+
+all: build 
+
+init:
+ 
+
+clean:
+	$(MAKE) -f Makefile clean; \
+	$(RM) byteorder
+	
+build: 
+	$(MAKE) -f Makefile $(MAKE_FLAGS) CC=$(CC) KERNEL_FULL_DIR=$(KERNEL_FULL_DIR) \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS) -D__LITTLE_ENDIAN_BITFIELD=1" \
+	LDFLAGS="$(EXTRA_LDFLAGS)"
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_check:
+	if [ ! -e ./mount/swapon ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+ifneq ($(CONFIG_UNIT_UTIL_HAS_NO_SWAPONOFF),y)
+	install -c ./mount/swapon $(PREFIX_DIR)/sbin;
+endif
+ifeq ($(CONFIG_UTIL_LINUX_HAS_UMOUNT),y)
+	install -c ./mount/umount $(PREFIX_DIR)/sbin;
+endif
+	install -c ./mount/mount $(PREFIX_DIR)/sbin;  
+else
+ifneq ($(CONFIG_UNIT_UTIL_HAS_NO_SWAPONOFF),y)
+	install -c ./mount/swapon  $(TARGET_APP_DIR)/sbin;
+endif
+ifeq ($(CONFIG_UTIL_LINUX_HAS_UMOUNT),y)
+	install -c ./mount/umount  $(TARGET_APP_DIR)/sbin;
+endif
+	install -c ./mount/mount $(TARGET_APP_DIR)/sbin;
+endif

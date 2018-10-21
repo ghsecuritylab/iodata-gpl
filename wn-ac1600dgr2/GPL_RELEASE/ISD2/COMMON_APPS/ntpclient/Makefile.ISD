@@ -1,0 +1,38 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+ifeq ($(CONFIG_NO_PRINTF_NTPCLIENT),y)
+EXTRA_CFLAGS += -D \"printf(x,...)=\"
+endif
+
+
+all:	build
+
+init:
+
+clean:
+	$(MAKE) $(MAKE_FLAGS) -f Makefile clean
+
+build:	init
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CROSS=$(CROSS) CFLAGS="$(EXTRA_CFLAGS) -I$(KERNEL_FULL_DIR)/include" LDFLAGS="$(EXTRA_LDFLAGS)"  all
+	$(STRIP) ntpclient
+	ls -al ntpclient 
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install:
+	if [ ! -e ntpclient ]; then \
+		false; \
+	else \
+		install -c ntpclient $(TARGET_DIR)/sbin; \
+	fi

@@ -1,0 +1,64 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+## created by cfho, 2005-1123 for IXP4xx
+#######################################################################
+
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+
+# Libtool places .o files in the .libs directory; this can mean that "make"
+# thinks is it not up-to-date when in fact it is. This setting helps when
+# GNU "make" is being used. It presumably does no harm in other cases.
+
+VPATH=.libs
+
+
+.PHONY:	all init clean-toolchain clean build distclean install
+INSTALL_LIBS= libz.so.1.2.3 libz.a
+INSTALL_LIBS_LINKS= libz.so libz.so.1
+INSTALL_INCLUDES= zconf.h zlib.h
+all:	build
+
+init:
+	./configure --shared 
+
+clean-toolchain:
+	# Do nothing
+
+clean:
+	$(MAKE) -f Makefile VPATH="$(VPATH)" clean
+
+build:	
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CROSS=$(CROSS) EXTRA_CFLAGS="$(EXTRA_CFLAGS)" EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" VPATH="$(VPATH)" all 
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install: install_libs install_libs_links install_includes
+
+install_libs:
+ifneq ($(INSTALL_LIBS),)
+	for d in $(INSTALL_LIBS); do \
+		(if [ ! -e ./$(VPATH)/$$d ]; then false; else install -c ./$(VPATH)/$$d $(CROSS_LIB_DIR); fi;); \
+	done;
+endif
+
+install_libs_links:
+ifneq ($(INSTALL_LIBS_LINKS),)
+	for d in $(INSTALL_LIBS_LINKS); do \
+		(if [ ! -e ./$(VPATH)/$$d ]; then false; else $(LN) -fs ./libz.so.1.2.3 $(CROSS_LIB_DIR)/$$d; fi;); \
+	done;
+endif 
+
+install_includes:
+ifneq ($(INSTALL_LIBS),)
+	for d in $(INSTALL_INCLUDES); do \
+		(if [ ! -e ./$$d ]; then false; else install -c ./$$d $(CROSS_INCLUDE_DIR); fi;); \
+	done;
+endif
+

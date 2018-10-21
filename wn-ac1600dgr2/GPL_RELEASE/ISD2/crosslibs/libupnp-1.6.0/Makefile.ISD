@@ -1,0 +1,92 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean-toolchain clean build distclean install
+
+
+EXTRA_CFLAGS+=-DHAS_DELETE_ALL_PORT_MAPPINGS=0
+
+ifdef $(CONFIG_LIBUPNPD_THREAD_IDLE_TIME)
+EXTRA_CFLAGS += -DNEW_THREAD_IDLE_TIME=$(CONFIG_LIBUPNPD_THREAD_IDLE_TIME)
+endif
+
+ifdef $(CONFIG_LIBUPNPD_JOBS_PER_THREAD)
+EXTRA_CFLAGS += -DNEW_JOBS_PER_THREAD=$(CONFIG_LIBUPNPD_JOBS_PER_THREAD)
+endif
+
+ifdef $(CONFIG_LIBUPNPD_MIN_THREADS)
+EXTRA_CFLAGS += -DNEW_MIN_THREADS=$(CONFIG_LIBUPNPD_MIN_THREADS)
+endif
+
+ifdef $(CONFIG_LIBUPNPD_MAX_THREADS)
+EXTRA_CFLAGS += -DNEW_MAX_THREADS=$(CONFIG_LIBUPNPD_MAX_THREADS)
+endif
+
+ifeq ($(CONFIG_HAS_OFFLINE_DOWNLOAD), y)
+EXTRA_CFLAGS += -DHAS_OFFLINE_DOWNLOAD=1
+endif
+
+all:	build
+
+INIT_CONFIG_PARAMETER = --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) --enable-dependency-tracking 
+
+ifeq  ($(CONFIG_LIBUPNPD_OPT_DISABLE_CLIENTS),y)
+INIT_CONFIG_PARAMETER += --disable-client
+endif
+ifeq  ($(CONFIG_LIBUPNPD_OPT_DISABLE_SAMPLES),y)
+INIT_CONFIG_PARAMETER += --disable-samples
+endif
+
+INIT_CONFIG_PARAMETER += --prefix=$(CROSS_DIR)  
+
+init:
+	chmod 777 configure; \
+	ac_cv_sys_restartable_syscalls=yes \
+	ac_cv_func_setvbuf_reversed=yes \
+	CC=$(CC) \
+	CFLAGS="$(EXTRA_CFLAGS)" \
+	./configure $(INIT_CONFIG_PARAMETER)
+
+clean-toolchain:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build: init	
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CC=$(CC) CFLAGS="$(EXTRA_CFLAGS) -DNO_DEBUG=1"
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_lib_a:
+	install -c ./upnp/.libs/libupnp.a $(CROSS_LIB_DIR); \
+	install -c ./ixml/.libs/libixml.a $(CROSS_LIB_DIR); \
+	install -c ./threadutil/.libs/libthreadutil.a $(CROSS_LIB_DIR)
+
+install: install_lib_a
+	mkdir -p $(CROSS_INCLUDE_DIR)/upnp;
+	mkdir -p $(CROSS_LIB_DIR)/pkgconfig;
+	install -c ./upnp/inc/upnp.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./upnp/inc/upnptools.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./upnp/inc/upnpdebug.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./upnp/inc/upnpconfig.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./ixml/inc/ixml.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./ixml/src/inc/*.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./threadutil/inc/*.h $(CROSS_INCLUDE_DIR)/upnp;
+	install -c ./upnp/.libs/libupnp.so.3.0.0 $(CROSS_LIB_DIR);
+	install -c ./*.pc $(CROSS_LIB_DIR)/pkgconfig;
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libupnp.so.3.0.0 libupnp.so.3 || { rm -f libupnp.so.0 && ln -s libupnp.so.3.0.0 libupnp.so.3; }; });
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libupnp.so.3.0.0 libupnp.so || { rm -f libupnp.so && ln -s libupnp.so.3.0.0 libupnp.so; }; });
+	install -c ./ixml/.libs/libixml.so.2.0.4 $(CROSS_LIB_DIR);
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libixml.so.2.0.4 libixml.so.2 || { rm -f libixml.so.0 && ln -s libixml.so.2.0.4 libixml.so.2; }; });
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libixml.so.2.0.4 libixml.so || { rm -f libixml.so && ln -s libixml.so.2.0.4 libixml.so; }; });
+	install -c ./threadutil/.libs/libthreadutil.so.2.1.1 $(CROSS_LIB_DIR);
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libthreadutil.so.2.1.1 libthreadutil.so.2 || { rm -f libthreadutil.so.0 && ln -s libthreadutil.so.2.1.1 libthreadutil.so.2; }; });
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libthreadutil.so.2.1.1 libthreadutil.so || { rm -f libthreadutil.so && ln -s libthreadutil.so.2.1.1 libthreadutil.so; }; });

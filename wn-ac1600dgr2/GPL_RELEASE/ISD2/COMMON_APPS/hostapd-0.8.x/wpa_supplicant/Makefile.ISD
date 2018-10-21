@@ -1,0 +1,184 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+OPT_CFLAGS = $(EXTRA_CFLAGS)
+
+# ath_sag is the atheros driver provided from Ubicom.
+ifneq ($(findstring ath_sag, $(HOSTAPD_WLAN_DRIVER_DIR)),)
+OPT_CFLAGS += \
+	-I$(HOSTAPD_WLAN_DRIVER_DIR)/drivers/wlan \
+	-I$(HOSTAPD_WLAN_DRIVER_DIR)/drivers/wlan/include
+else
+OPT_CFLAGS += \
+	-I$(HOSTAPD_WLAN_DRIVER_DIR) \
+	-I$(HOSTAPD_WLAN_DRIVER_DIR)/linux 
+endif
+
+OPT_CFLAGS += -I./include -I$(APPS_FULL_DIR)/h -I$(TOP_DIR)/configs/h \
+	-I$(APPS_FULL_DIR)/sysutil/include -I$(APPS_FULL_DIR)/ap_cfg/include
+
+# Version of the Wireless Driver for Atheros
+ATHEROS_WLAN_DRIVER_VER := $(shell sed -ne "/ATHEROS_WLAN_DRIVER_VER/{s:\([^0-9]*\)::;p;q;}" < $(shell pwd)/../../configs/product_config.make)
+# if get nothing, set driver version to 7
+ifeq ($(strip ${ATHEROS_WLAN_DRIVER_VER}),)
+ATHEROS_WLAN_DRIVER_VER=7
+endif
+
+ifeq ($(strip ${ATHEROS_WLAN_DRIVER_VER}),9)
+## LSDK-WLAN-9.x include path ##
+OPT_CFLAGS += \
+	-I$(HOSTAPD_WLAN_DRIVER_DIR)/os/linux
+endif
+
+OPT_CFLAGS += -DATHEROS_WLAN_DRIVER_VER=$(ATHEROS_WLAN_DRIVER_VER)
+OPT_CFLAGS += -DSENAO_MOD=1
+
+#OPT_CFLAGS = $(EXTRA_CFLAGS) \
+#	-I$(ATHEROSAPP_DIR)/LSDK-WLAN-7.x \
+#	-I$(ATHEROSAPP_DIR)/LSDK-WLAN-7.x/linux
+
+
+	#-DAH_BYTE_ORDER=AH_BIG_ENDIAN \
+	#-D=AH_REGOPS_FUNC \
+	#-D__LINUX_MIPS32_ARCH__ \
+	#-D_BYTE_ORDER=4321
+
+ifeq ($(ARCH_TARGET),mips-be-elf)
+OPT_CFLAGS += -D_BYTE_ORDER=4321
+endif
+
+OPENSSLIBS="$(CROSSLIB_DIR)/$(SSL_DIR)/libssl.a $(CROSSLIB_DIR)/$(SSL_DIR)/libcrypto.a"
+
+#ifeq ($(CONFIG_ATHEROS_RSN_IE_PATCH),y)
+#EXTRA_CFLAGS += -DADD_RSN_IE_PATCH=1
+#EXTRA_CFLAGS += -DHAS_RSN_IE=1
+#endif
+
+# OPT_CFLAGS += -DCONFIG_NO_STDOUT_DEBUG=1
+
+ifeq ($(CONFIG_ATHEROS_SUPPORT_WPS_LED_SIMPLE_CONFIG),y)
+OPT_CFLAGS+= -DATHEROS_SUPPORT_WPS_LED_SIMPLE_CONFIG
+endif
+
+ifeq ($(CONFIG_WPA_SUPPLICANT_NO_SCAN_HIDDENSSID),y)
+OPT_CFLAGS+= -DWPA_SUPPLICANT_NO_SCAN_HIDDENSSID=1
+endif
+
+ifeq ($(CONFIG_WPA_SUPPLICANT_SCAN_RESULT_SHOW_NETWORK),y)
+OPT_CFLAGS+= -DWPA_SUPPLICANT_SCAN_RESULT_SHOW_NETWORK=1
+endif
+
+ifeq ($(CONFIG_BELKIN-N900),y)
+OPT_CFLAGS+= -DBELKIN_N900=1
+OPT_CFLAGS+= -I$(APPS_FULL_DIR)/sysutil/include
+OPT_CFLAGS+= -I$(TOP_DIR)/configs/h
+#OPT_CFLAGS+= -I$(KERNEL_FULL_DIR)/arch/ubicom32/include/asm
+endif
+
+# Wi-Fi Protected Setup (WPS)
+ifeq ($(CONFIG_ATHEROS_SUPPORT_WPS),y)
+CONFIG_WPS=y
+endif
+ifeq ($(CONFIG_ATHEROS_SUPPORT_WPS2),y)
+CONFIG_WPS2=y
+endif
+ifeq ($(CONFIG_ATHEROS_SUPPORT_WPS_STRICT),y)
+CONFIG_WPS_STRICT=y
+endif
+
+ifeq ($(CONFIG_ATHEROS_DISABLE_WPS2_AT_STA),y)
+OPT_CFLAGS+= -DCONFIG_ATHEROS_DISABLE_WPS2_AT_STA
+endif
+
+# Enable UPnP support for external WPS Registrars
+ifeq ($(CONFIG_ATHEROS_SUPPORT_WPS_UPNP),y)
+CONFIG_WPS_UPNP=y
+endif
+
+ifeq ($(CONFIG_USE_OPENSSL_SHARED_LIB),y)
+CONFIG_OPENSSLIBS=""
+else
+CONFIG_OPENSSLIBS=$(OPENSSLIBS)
+endif
+
+ifeq ($(CONFIG_ATHEROS_SUPPORT_WPS_LED),y)
+OPT_CFLAGS+= -DHAS_WPS_GPIO_LED
+#CONFIG_GPIO_LED is kernel flag
+OPT_CFLAGS+= -DCONFIG_GPIO_LED
+OPT_CFLAGS+= -I$(KERNEL_FULL_DIR)/include/asm-mips/mach-ar7100/
+endif
+
+ifeq ($(CONFIG_SAVE_HOSTAPD_WPS_STATUS_IN_FILE),y)
+OPT_CFLAGS+= -DCONFIG_SAVE_HOSTAPD_WPS_STATUS_IN_FILE
+endif
+
+ifeq ($(CONFIG_HAS_HOSTAPD_LOG),y)
+OPT_CFLAGS+= -DCONFIG_HOSTAPD_LOG
+endif
+
+ifeq ($(CONFIG_AP_PROFILE),y)
+OPT_CFLAGS +=-DHAS_AP_PROFILE=1
+endif
+
+ifeq ($(CONFIG_HAS_HOSTAPD_WPS_DUAL_RF),y)
+OPT_CFLAGS+= -DHAS_HOSTAPD_WPS_DUAL_RF
+endif
+
+OPT_CFLAGS+= -DHOSTAPD
+
+OPT_CFLAGS+= -I$(TOP_DIR)/configs/h
+
+all: clean build
+
+init: 
+
+clean:
+	($(MAKE) -f Makefile clean)
+
+build:	clean init
+	$(MAKE) -C ../wpa_supplicant $(MAKE_FLAGS) -f Makefile CC=$(CC) OPT_CFLAGS="$(OPT_CFLAGS)" \
+    EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" \
+    OPENSSLIBS=$(CONFIG_OPENSSLIBS) \
+    SYSUTILLIBS=$(SYSUTIL_LIBS) \
+	CONFIG_WPS=$(CONFIG_WPS) \
+    CONFIG_WPS2=$(CONFIG_WPS2) \
+    CONFIG_WPS_STRICT=$(CONFIG_WPS_STRICT) \
+	CONFIG_WPS_UPNP=$(CONFIG_WPS_UPNP) \
+	all
+	$(STRIP) wpa_supplicant
+	$(STRIP) wpa_cli
+	$(STRIP) wpa_passphrase
+	cp wpa_supplicant /tftpboot/
+	cp wpa_cli /tftpboot/
+	cp wpa_passphrase /tftpboot/
+	ls -al /tftpboot/wpa_supplicant
+	ls -al /tftpboot/wpa_cli
+	ls -al /tftpboot/wpa_passphrase
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_check:
+	if [ ! -e wpa_supplicant ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c wpa_supplicant  $(PREFIX_DIR)/sbin;
+	install -c wpa_cli  $(PREFIX_DIR)/sbin;
+	install -c wpa_passphrase  $(PREFIX_DIR)/sbin;
+else
+	install -c wpa_supplicant  $(PREFIX_DIR)/sbin;
+	install -c wpa_cli  $(PREFIX_DIR)/sbin;
+	install -c wpa_passphrase  $(PREFIX_DIR)/sbin;
+endif

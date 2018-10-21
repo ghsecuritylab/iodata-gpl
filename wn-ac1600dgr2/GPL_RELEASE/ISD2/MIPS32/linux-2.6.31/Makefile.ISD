@@ -1,0 +1,160 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD2)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY: dep depend all init clean build mrproper linux romfs romfs.o distclean install oldconfig menuconfig $(KIMAGE) cleanromfs rebuild dummy fixlinks copy2tftpboot
+
+
+
+#all: fixlinks dep linux
+
+all: uImage copy2tftpboot
+
+
+init_config_file:
+	if [ -e $(TOP_DIR)/configs/kernel_def_config ]; then \
+		cp -f .config .config_backup ; \
+		ln -sf  $(TOP_DIR)/configs/kernel_def_config .config ; \
+	else \
+		cp .config_backup .config ; \
+	fi
+
+
+init:  
+		$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) \
+		$(EXTRA_DEF) TOP_DIR=$(TOP_DIR) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) dep; mkdir -p $(KIMAGE_DIR); \
+
+menuconfig oldconfig:
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) $@
+
+mrproper:
+	$(MAKE) mrproper ARCH=$(ARCH)
+
+cleanimage:
+	rm -rf $(KIMAGE_DIR)
+	rm -f tftpboot/$(KIMAGE)
+
+cleanromfs:
+	$(MAKE) -C $(VENDOR_FULL_DIR) -f Makefile.ISD clean
+
+
+distclean:
+	$(MAKE) -f Makefile ARCH=$(ARCH) distclean
+
+clean:distclean
+	$(MAKE) -f Makefile ARCH=$(ARCH) clean 
+
+linux_%:
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) $@
+
+___linux: 
+	rm -f linux
+	$(MAKE) $(MAKE_FLAGS) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) linux
+
+linux: init_config_file
+	rm -f linux
+	$(MAKE) $(MAKE_FLAGS) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) PRODUCT_NAME=$(PRODUCT_NAME)
+
+modules: init_config_file
+	$(MAKE) $(MAKE_FLAGS) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) modules
+
+CUR_DIR=$(shell pwd)
+modules_install: init_config_file
+	(cd $(CUR_DIR); $(MAKE) $(MAKE_FLAGS) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) KERNELRELEASE=$(KERNEL_VER) modules_install)
+
+modules_install_no_modules:  modules_install
+	rm -rf $(INSTALL_MOD_PATH)/lib/modules
+
+modules_install_no_netfilter_no_wlandrv:  modules_install
+	find $(INSTALL_MOD_PATH)/lib/modules/ |grep netfilter|xargs rm -rf
+	find $(INSTALL_MOD_PATH)/lib/modules/ |grep net |grep rt28|xargs rm -rf
+	find $(INSTALL_MOD_PATH)/lib/modules/ |grep sw_nat|xargs rm -rf
+	find $(INSTALL_MOD_PATH)/lib/modules/ |grep rt_timer|xargs rm -rf
+	find $(INSTALL_MOD_PATH)/lib/modules/ |grep "imq.o"|xargs rm -rf
+	find $(INSTALL_MOD_PATH)/lib/modules/ |grep "ip_gre.o"|xargs rm -rf
+
+modules_install_only_netfilter:  modules_install
+
+#	find $(INSTALL_MOD_PATH)/lib/modules/ |grep ts_|xargs rm -rf
+
+zImage: init_config_file
+	@mkdir -p ./images
+	$(CROSS)objcopy -O binary -R .note -R .comment -S vmlinux  ./images/zImage
+	rm -rf ./images/zImage.*
+	$(LZMA) -9 -f -S .lzma ./images/zImage
+	
+## marklin 20081013 ; Loading address according " _text" not assign fixed address
+uImage: init_config_file dep linux zImage
+	rm -rf ./images/uImage 
+ifeq ($(PRODUCT_NAME),NBG6716)
+	$(MKIMAGE_DIR)/mkimage -A mips -O linux -T kernel \
+	-C $(KNL_COMP_METHOD) -a $(shell nm $(KERNEL_FULL_DIR)/vmlinux | grep " _text" | awk '{print $$1}') \
+	-e $(shell readelf -h $(KERNEL_FULL_DIR)/vmlinux | grep "Entry" | awk '{print $$4}') \
+	-n "NBG6716"  \
+	-d ./images/zImage.$(KNL_COMP_METHOD) ./images/uImage
+else
+	$(MKIMAGE_DIR)/mkimage -A mips -O linux -T kernel \
+	-C $(KNL_COMP_METHOD) -a $(shell nm $(KERNEL_FULL_DIR)/vmlinux | grep " _text" | awk '{print $$1}') \
+	-e $(shell readelf -h $(KERNEL_FULL_DIR)/vmlinux | grep "Entry" | awk '{print $$4}') \
+	-n "Linux Kernel Image"  \
+	-d ./images/zImage.$(KNL_COMP_METHOD) ./images/uImage
+endif
+	$(CP) ./images/uImage /tftpboot
+	ls -al /tftpboot/uImage
+
+build:  uImage
+#build:  init_config_file romfs romfs.o linux
+
+rebuild: distclean init build
+
+depend:
+	$(MAKE) ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) AUTOCONF_H_DIR=$(AUTOCONF_H_DIR) $(EXTRA_DEF) TOP_DIR=$(TOP_DIR) PRODUCT_NAME=$(PRODUCT_NAME) dep
+
+dep: depend
+
+$(KIMAGE):
+	$(CROSS)objcopy -I elf32-littlearm -O binary linux $(KIMAGE_DIR)/linux.bin
+	gzip -9 -f  $(KIMAGE_DIR)/linux.bin
+	$(VENDOR_FULL_DIR)/utils/mkimage -a 0x10001000 -e 0x10001000 -n "linux kernel v2.4" -d $(KIMAGE_DIR)/linux.bin.gz $(KIMAGE_DIR)/$(KIMAGE)
+	#$(VENDOR_FULL_DIR)/utils/mkimage -a 0x10fdc040 -e 0x10fdc040 -n "configuration vbeta" -d $(VENDOR_FULL_DIR)/binimages/config $(KIMAGE_DIR)/config.img
+	#$(VENDOR_FULL_DIR)/utils/fixcksum $(VENDOR_FULL_DIR)/vnet/bin/wirelessDK.rom $(KIMAGE_DIR)/wireless.img
+	#$(VENDOR_FULL_DIR)/utils/fixfirm $(KIMAGE_DIR)/$(KIMAGE) $(KIMAGE_DIR)/wireless.img $(KIMAGE_DIR)/config.img $(KIMAGE_DIR)/$(FIRMNAME) "cafecafe"
+	../../util/header.x86 -s $(KIMAGE_DIR)/$(KIMAGE) -d $(KIMAGE_DIR)/$(KIMAGE_DLF) -a -t "kernel"; \
+	ls -l $(KIMAGE_DIR)/$(KIMAGE_DLF)
+romfs:
+	$(MAKE) -C $(VENDOR_FULL_DIR) -f Makefile.ISD all
+
+romfs.o:
+	rm -f $(KIMAGE_DIR)/rom.img
+	genromfs -v -V "ROMdisk" -f $(KIMAGE_DIR)/rom.img -d $(ROMFS_DIR)
+	$(CROSS)ld -r -o romfs.o -b binary $(KIMAGE_DIR)/rom.img
+	ls -l romfs.o
+
+distclean: mrproper cleanimage
+
+install_iphone: $(KIMAGE)
+	if [ ! -e $(KIMAGE_DIR)/$(KIMAGE) ]; then \
+		false; \
+	else \
+		cp -f $(KIMAGE_DIR)/$(KIMAGE) /tftpboot/$(KIMAGE); \
+		cp $(KIMAGE_DIR)/$(KIMAGE_DLF) /tftpboot/$(KIMAGE_DLF); \
+	fi
+	ls -l /tftpboot/$(KIMAGE)
+	ls -l /tftpboot/$(KIMAGE_DLF)
+
+install:
+	if [ ! -e ./images/uImage ]; then \
+		false; \
+	else \
+		/bin/cp ./images/uImage /tftpboot/uImage; \
+	fi
+
+copy2tftpboot:
+	$(CP) System.map /tftpboot/
+	ls -l /tftpboot/System.map

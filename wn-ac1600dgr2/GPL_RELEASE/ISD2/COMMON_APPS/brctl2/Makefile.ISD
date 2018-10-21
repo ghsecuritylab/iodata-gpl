@@ -1,0 +1,49 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+# TODO: we may use kernel version.
+ifeq ($(ARCH), ubicom32)
+EXTRA_CFLAGS += -D__EXPORTED_HEADERS__ -I$(KERNEL_FULL_DIR)/arch/$(ARCH)/include
+endif
+
+CFLAGS=$(EXTRA_CFLAGS)
+
+all:	build copy2tftpboot
+
+init:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build:	init
+	$(MAKE) -f Makefile CROSS=$(CROSS) EXTRA_CFLAGS="$(CFLAGS)" EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" \
+	KERNEL_FULL_DIR=$(KERNEL_FULL_DIR) all
+
+copy2tftpboot:
+	$(STRIP) brctl
+	cp brctl /tftpboot
+	ls -al /tftpboot/brctl
+
+distclean:
+	$(MAKE) -f Makefile clean
+
+install_check:
+	if [ ! -e brctl ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c brctl $(PREFIX_DIR)/sbin; 
+else
+	install -c brctl  $(TARGET_APP_DIR)/sbin ;
+endif

@@ -1,0 +1,125 @@
+TOP_DIR=/ISD2
+include $(TOP_DIR)/configs/config.make
+
+
+ifeq ($(APPS_LZMA_PACKAGE),)
+TARGET_APP_LZMA_PACKAGE_DIR=NONE
+endif
+
+# default USE_UCLIBC_VERSION=0.9.29
+ifeq ($(CONFIG_UCLIBC_VERSION),)
+USE_UCLIBC_VERSION=0.9.29
+else
+USE_UCLIBC_VERSION=$(CONFIG_UCLIBC_VERSION)
+endif
+
+# default USE_LIB_MATH=y
+ifeq ($(CONFIG_USE_LIBMATH),n)
+USE_LIB_MATH=n
+else
+USE_LIB_MATH=y
+endif
+
+# default USE_LIB_Z=y
+ifeq ($(CONFIG_USE_LIBZ),n)
+USE_LIB_Z=n
+else
+USE_LIB_Z=y
+endif
+
+# default USE_LIB_RT=y
+ifeq ($(CONFIG_USE_LIBRT),n)
+USE_LIB_RT=n
+else
+USE_LIB_RT=y
+endif
+
+# default USE_LIB_GCC=n
+ifeq ($(CONFIG_USE_LIB_GCC),y)
+USE_LIB_GCC=y
+else
+USE_LIB_GCC=n
+endif
+
+# default USE_RTLIB_MATH=n
+ifeq ($(CONFIG_USE_RTLIB_MATH),y)
+USE_RTLIB_MATH=y
+else
+USE_RTLIB_MATH=n
+endif
+
+# default USE_LIB_SSL=n
+ifeq ($(CONFIG_USE_LIBSSL),y)
+USE_LIB_SSL=y
+else
+USE_LIB_SSL=n
+endif
+
+# default USE_LIB_USB=n
+ifeq ($(CONFIG_USE_LIBUSB),y)
+USE_LIB_USB=y
+else
+USE_LIB_USB=n
+endif
+
+# default USE_LIB_GMP=n
+ifeq ($(CONFIG_USE_LIBGMP),y)
+USE_LIB_GMP=y
+else
+USE_LIB_GMP=n
+endif
+
+ifeq ($(CONFIG_USE_ONE_FW_IMAGE),y)
+USE_ONE_FW_IMAGE=y
+else
+USE_ONE_FW_IMAGE=n
+endif
+
+ifeq ($(CONFIG_HAS_FW1_FW2),y)
+HAS_FW1_FW2=y
+else
+HAS_FW1_FW2=n
+endif
+
+ifeq ($(CONFIG_NO_APPSCORE),y)
+NO_APPSCORE=y
+else
+NO_APPSCORE=n
+endif
+
+ifeq ($(CONFIG_USE_I2C),)
+CONFIG_USE_I2C=n
+endif
+ifeq ($(CONFIG_USE_RTC),)
+CONFIG_USE_RTC=n
+endif
+
+ifeq ($(CONFIG_BACKUP_IMAGE_ONLY),y)
+USE_LIB_WITH_BACKUP_ONLY=y
+else
+USE_LIB_WITH_BACKUP_ONLY=n
+endif
+
+
+ifeq ($(CONFIG_USE_COMBINED_FW_IMAGE),y)
+USE_COMBINED_FW_IMAGE=y
+else
+USE_COMBINED_FW_IMAGE=n
+endif
+
+
+.PHONY:	all 
+
+
+all: apps-img kernel-img 
+
+
+apps-img:
+	./make_app_img.sh $(PRODUCT_NAME) $(TARGET_DIR) $(TARGET_APP_DIR) $(TARGET_APP_CORE_DIR) $(TOP_DIR) $(BIN_FORMAT) $(MKSQUASHFS_DIR) $(SYSTEM_IS_LITTLE_ENDIAN)
+
+
+kernel-img:
+	rm -rf $(TOP_DIR)/TARGET_RAMDISK/IMG/kernel.dlf;
+	./make_knl_img.sh $(PRODUCT_NAME) $(KERNEL_FULL_DIR)/images/$(KERNEL_IMAGE_TYPE) $(KERNEL_IMAGE_TYPE) $(TOP_DIR) $(CONFIG_FLASH_SECTOR_SIZE); 
+
+

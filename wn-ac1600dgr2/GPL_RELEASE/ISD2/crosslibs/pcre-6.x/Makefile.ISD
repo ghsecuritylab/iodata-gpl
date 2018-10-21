@@ -1,0 +1,48 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean-toolchain clean build distclean install
+
+all:	build
+
+init:
+	CC=$(CC) \
+	CFLAGS="$(EXTRA_CFLAGS)" \
+	LDFLAGS="$(EXTRA_LDFLAGS)" \
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) \
+	--enable-readline --disable-statici --disable-cpp --prefix=$(CROSS_DIR)
+	
+clean-toolchain:
+
+clean:
+	if [ -f Makefile ]; then \
+	$(MAKE) -f Makefile clean; \
+	fi
+
+build:	init
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CFLAGS="$(EXTRA_CFLAGS)" MINI_PCRE_LIB=y
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install:
+	mkdir -p $(CROSS_LIB_DIR)/pkgconfig;
+	install -c pcre*.h $(CROSS_INCLUDE_DIR);
+	install -c pcre-config $(CROSS_INCLUDE_DIR);
+	install -c ./.libs/libpcre.a $(CROSS_LIB_DIR);
+	install -c ./.libs/libpcre.so.0.0.1 $(CROSS_LIB_DIR);
+	install -c ./*.pc $(CROSS_LIB_DIR)/pkgconfig;
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libpcre.so.0.0.1 libpcre.so.0 || { rm -f libpcre.so.0 && ln -s libpcre.so.0.0.1 libpcre.so.0; }; });
+	(cd $(CROSS_LIB_DIR) && { ln -s -f libpcre.so.0.0.1 libpcre.so || { rm -f libpcre.so && ln -s libpcre.so.0.0.1 libpcre.so; }; }) 
+
+
+
+	
+	

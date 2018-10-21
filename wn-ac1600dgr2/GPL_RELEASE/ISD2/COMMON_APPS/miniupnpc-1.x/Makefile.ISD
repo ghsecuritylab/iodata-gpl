@@ -1,0 +1,36 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+all:	build
+
+init:
+
+clean:
+	$(MAKE) CROSS=$(CROSS) $(MAKE_FLAGS) -f Makefile clean
+
+build:	
+	$(MAKE) CROSS=$(CROSS) $(MAKE_FLAGS) \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS) -I../../configs/h" \
+	EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" -f Makefile
+
+install_check:
+	if [ ! -e upnpc-static ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c upnpc-static $(PREFIX_DIR)/sbin/upnpc;
+else
+	install -c upnpc-static $(TARGET_APP_DIR)/sbin/upnpc;
+endif
+

@@ -1,0 +1,6 @@
+{ global:
+regcomp;
+regerror;
+regexec;
+regfree;
+local: *; };

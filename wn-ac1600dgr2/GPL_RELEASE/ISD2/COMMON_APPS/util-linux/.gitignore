@@ -1,0 +1,6 @@
+mount/losetup
+mount/mount
+mount/pivot_root
+mount/swapargs.h
+mount/swapon
+mount/umount

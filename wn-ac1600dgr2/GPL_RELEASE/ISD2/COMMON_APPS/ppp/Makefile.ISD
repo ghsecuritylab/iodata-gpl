@@ -1,0 +1,133 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install fixfilemod 
+
+CFLAGS=$(EXTRA_CFLAGS)
+
+ifeq ($(ETH_CHIP_CONFIG), $(filter $(ETH_CHIP_CONFIG), _AR833X))
+CFLAGS += -DHAS_ATHRS_S17C_CONFIG=1
+endif
+
+ifeq ($(CONFIG_HAS_MULTIPLE_WAN),y)
+CFLAGS += -DHAS_MULTI_PPP_CONFIG=1
+endif
+
+ifeq ($(CONFIG_HAS_MULTIPLE_WAN),y)
+CFLAGS += -DHAS_MULTI_PPP_CONFIG=1
+endif
+
+ifeq ($(CONFIG_HAS_PPPD_NO_MESSAGES),y)
+CFLAGS += -DHAS_PPPD_MESSAGES=0 -DHAS_PPPD_OPTION_ERROR=0
+else
+CFLAGS += -DHAS_PPPD_MESSAGES=1 -DHAS_PPPD_OPTION_ERROR=1
+endif
+
+ifeq ($(CONFIG_HAS_PPPD_STRICT_FEATURES),y)
+CFLAGS += -DHAS_PPPD_FULL_FEATURES=0
+else
+CFLAGS += -DHAS_PPPD_FULL_FEATURES=1
+endif
+
+ifeq ($(CONFIG_WAN_3G_DEBUG),y)
+CFLAGS += -DWAN_3G_DEBUG=1
+else
+CFLAGS += -DWAN_3G_DEBUG=0
+endif
+
+ifeq ($(CONFIG_HAS_WAN_IODATA_3G),y)
+CFLAGS += -DHAS_IODATA_3G=1
+endif
+
+ifeq ($(CONFIG_HAS_WAN_JP_FLETS),y)
+CFLAGS += -DHAS_FLETS_PPPOE=1
+endif
+
+ifeq ($(CONFIG_SUPPORT_IPV6_PPPOE),y)
+CFLAGS += -DSUPPORT_IPV6_PPPOE=1
+endif
+
+ifeq ($(CONFIG_HAS_WAN_3G),y)
+CFLAGS += -DHAS_WAN_3G=1
+endif
+
+ifeq ($(CONFIG_HAS_PPPD_DBGLOG),y)
+CFLAGS += -DHAS_PPPD_PRINTPKT=1 -DHAS_DBGLOG=1
+else
+CFLAGS += -DHAS_PPPD_PRINTPKT=0 -DHAS_DBGLOG=0
+endif
+
+ifeq ($(CONFIG_HAS_WAN_LINKCHECK),y)
+CFLAGS += -DHAS_WAN_LINKCHECK=1
+endif
+
+ifeq ($(CONFIG_HAS_PPPD_MORE_DEBUG_LOG),y)
+CFLAGS += -DHAS_PPPD_MORE_DEBUG_LOG=1
+endif
+
+BUILD_OPTS=
+ifeq ($(CONFIG_HAS_PPPD_FILTER),y)
+BUILD_OPTS += PRECOMPILED_FILTER=y
+BUILD_OPTS += LIBPCAP_DIR=$(CROSSLIB_DIR)/$(PCAP_DIR)
+ifeq ($(CONFIG_HAS_PPPD_KERNEL_FILTER),y)
+CFLAGS += -DHAS_PPPD_KERNEL_FILTER=1
+endif
+endif
+
+ifeq ($(ETH_CONFIG), _s17_hwaccel)
+CFLAGS += -D_s17_hwaccel
+endif
+
+all: build
+
+init:
+	if [ ! -e pppd/pppd ]; then \
+	find ./ -name "*.sh" |xargs chmod 755; \
+	find ./ -name "*.pl" |xargs chmod 755; \
+	find ./ -name "configure" |xargs chmod 755; \
+	CC=$(CC)\
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) --enable-readline --prefix=/  ; \
+	fi
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build: 
+	$(MAKE) -f Makefile \
+		EXTRA_CFLAGS="$(CFLAGS) -DCHAPMS=1 -DUSE_CRYPT=1" \
+		EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" \
+		CROSS=$(CROSS) \
+		$(BUILD_OPTS)
+	#$(MAKE) -C utils $(BUILD_OPTS)
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install:
+	if [ ! -e chat/chat ] ||		\
+	   [ ! -e pppd/pppd ] ||		\
+	   [ ! -e pppstats/pppstats ]; then	\
+		false; \
+	elif echo $(TARGET_DIR) | grep "LITTLEAPPS" ; then\
+		install -c pppd/pppd $(TARGET_LITTLEAPP_DIR)/usr/sbin/pppd; \
+	else\
+		install -c chat/chat $(TARGET_APP_DIR)/usr/sbin/chat; \
+		install -c pppd/pppd $(TARGET_APP_DIR)/usr/sbin/pppd; \
+		install -c pppstats/pppstats $(TARGET_APP_DIR)/usr/sbin/pppstats; \
+		install -c scripts/pon $(TARGET_APP_DIR)/usr/sbin/pon; \
+		install -c scripts/poff $(TARGET_APP_DIR)/usr/sbin/poff; \
+	fi
+ifeq ($(CONFIG_HAS_PPPD_FILTER),y)
+	mkdir -p $(TARGET_APP_DIR)/etc/ppp
+	install -c utils/filter $(TARGET_APP_DIR)/etc/ppp/
+ifeq ($(CONFIG_HAS_PPPD_KERNEL_FILTER),y)
+	install -c utils/filter-kern $(TARGET_APP_DIR)/etc/ppp/
+endif
+endif

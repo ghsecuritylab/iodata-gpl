@@ -1,0 +1,8 @@
+Thu Apr 20 13:01:25 2006
+Starting new check.
+Verify checksum:Error! Cannot open filename passed for verify checksum: file0
+CRC error in file: file0
+Verify checksum:Error! Cannot open filename passed for verify checksum: file1
+CRC error in file: file1
+
+Max Error count exceed. Stopping!

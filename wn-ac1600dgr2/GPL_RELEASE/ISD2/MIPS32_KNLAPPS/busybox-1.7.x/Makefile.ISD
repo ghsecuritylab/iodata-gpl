@@ -1,0 +1,70 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+MY_CFLAGS = $(EXTRA_CFLAGS)
+
+ifeq ($(CONFIG_DHCPD_HAS_HOSTNAME),y)
+MY_CFLAGS +=-DHAS_DHCP_HOST_FUNCTION=1
+endif
+
+ifeq ($(CONFIG_DHCPD_HAS_CLIENT_IFNAME),y)
+MY_CFLAGS +=-DHAS_DHCPD_IF_INFOMATION_FUNCTION=1
+endif
+
+ifeq ($(CONFIG_SUPPORT_LOG_TO_NETWORK),y)
+MY_CFLAGS += -DSUPPORT_NC_UDP=1
+endif
+
+ifeq ($(CONFIG_HAS_PARENTAL_CONTROL),y)
+MY_CFLAGS += -DHAS_PARENTAL_CONTROL=1
+endif
+
+ifeq ($(CONFIG_SUPPORT_IPV6_SETTING),y)
+MY_CFLAGS += -DSUPPORT_IPV6_SETTING=1
+endif
+
+MY_CFLAGS += -I$(TOP_DIR)/configs/h
+
+
+all:	clean build copy2tftpboot
+
+
+init:
+	if [ -e $(TOP_DIR)/configs/busybox_def_config ]; then \
+		cp -f .config .config_backup ; \
+		ln -sf  $(TOP_DIR)/configs/busybox_def_config .config ; \
+	else \
+		cp .config_backup .config ; \
+	fi
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build:	init
+	$(MAKE) MAKEFLAGS=$(MAKE_FLAGS) -f Makefile ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) \
+	EXTRA_CFLAGS="$(MY_CFLAGS)" EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" \
+	CROSS_INCLUDE=$(CROSS_INCLUDE) KERNEL_HEADERS_INCLUDE=$(KERNEL_HEADERS_INCLUDE) all 
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install:
+	if [ ! -e busybox ]; then \
+		false; \
+	else \
+		$(MAKE) $(MAKE_FLAGS) -f Makefile ARCH=$(ARCH) CROSS_COMPILE=$(CROSS) EXTRA_CFLAGS="$(MY_CFLAGS)" EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" CROSS_INCLUDE=$(CROSS_INCLUDE) KERNEL_HEADERS_INCLUDE=$(KERNEL_HEADERS_INCLUDE) CONFIG_PREFIX=$(TARGET_DIR) install; \
+	fi
+
+copy2tftpboot:
+	$(STRIP) busybox
+	cp busybox /tftpboot
+	ls -al /tftpboot/busybox

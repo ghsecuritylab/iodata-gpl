@@ -1,0 +1,49 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean-toolchain clean build distclean install
+
+all:	build
+
+init:
+	if [ ! -e configure ] ; then \
+		sh autogen.sh; \
+	fi
+	export ac_cv_func_malloc_0_nonnull=yes; \
+	export ac_cv_func_realloc_0_nonnull=yes; \
+	aclocal -I m4; \
+	automake --add-missing --copy; \
+	autoconf; \
+	CC=$(CC) \
+	CFLAGS="$(EXTRA_CFLAGS)" \
+	LDFLAGS="$(EXTRA_LDFLAGS)" \
+	./configure --build=i686-linux --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) \
+	--enable-dependency-tracking \
+	--prefix=$(CROSS_DIR)  
+
+clean-toolchain:
+
+clean:
+	if [ -e Makefile ]; then \
+		$(MAKE) -f Makefile clean; \
+	fi;
+
+build: init	
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CC=$(CC) CFLAGS="$(EXTRA_CFLAGS) -DNO_DEBUG=1"
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_lib_a:
+	install -c ./libusb/.libs/libusb-1.0.a $(CROSS_LIB_DIR)
+
+install:
+	install -c libfl.a $(CROSS_LIB_DIR)
+	install -c libfl_pic.a $(CROSS_LIB_DIR)

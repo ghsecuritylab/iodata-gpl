@@ -1,0 +1,47 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+MY_CFLAGS = $(EXTRA_CFLAGS)
+
+ifeq ($(CONFIG_HAS_DNSMASQ_DNSREPLY_TO_SYSCONF_CLI),y)
+MY_CFLAGS += -DHAS_DNSMASQ_DNSREPLY_TO_SYSCONF_CLI=1
+endif
+
+.PHONY:	all init clean build distclean install
+
+
+all:	clean build
+
+init:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build:	init
+	$(MAKE) -f Makefile CROSS=$(CROSS) \
+	EXTRA_CFLAGS="$(MY_CFLAGS) -DNO_IPV6=1" \
+	EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)" all
+	$(STRIP) ./src/dnsmasq
+	ls -al ./src/dnsmasq
+
+distclean:
+	$(MAKE) -f Makefile clean
+
+install_check:
+	if [ ! -e ./src/dnsmasq ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c ./src/dnsmasq  $(PREFIX_DIR)/sbin; 
+else
+	install -c ./src/dnsmasq  $(TARGET_APP_DIR)/sbin ;
+endif

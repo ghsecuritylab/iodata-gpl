@@ -1,0 +1,99 @@
+#######################################################################
+##
+## Embedded Target Makefile (HGW)
+##
+## Author: Charles Chiou <cchiou@viosoft.com>
+##
+## Copyright (C) 2000-2002, Viosoft Corporation. All rights reserved.
+## No part of this document may be reproduced in any form or by any 
+## means or used to make any derivative work (such as translation,
+## transformation, or adaptation) without permission from Viosoft
+## Corporation.
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+INSTALL_DIR=$(TARGET_APP_DIR)
+INSTALL_DIR_LITTLEAPPS=$(TARGET_LITTLEAPP_DIR)
+PPP_DIR=$(shell pwd)/../ppp
+
+ifeq ($(ETH_CHIP_CONFIG), $(filter $(ETH_CHIP_CONFIG), _AR833X))
+EXTRA_CFLAGS += -DHAS_ATHRS_S17C_CONFIG=1
+endif
+
+all:	fixfilemod build
+
+ifeq ($(ETH_CONFIG), _s17_hwaccel)
+EXTRA_CFLAGS += -D_s17_hwaccel
+endif
+
+init:
+	if [ ! -e src/Makefile ] || [ ! -e gui/Makefile ] ; then \
+		(cd src ;CC=$(CC) \
+		CFLAGS="$(EXTRA_CFLAGS) -I$(TOP_DIR)/configs/h" \
+		LDFLAGS="$(EXTRA_LDFLAGS)" \
+		ac_cv_header_linux_if_pppox_h=yes \
+		ac_cv_linux_kernel_pppoe=yes \
+		./configure --includedir=$(KERNEL_FULL_DIR)/include --build=i686-linux \
+		 --target=$(CROSS_TOOL) --host=$(CROSS_TOOL) \
+		--disable-debugging \
+		  --enable-plugin=$(PPP_DIR) --prefix=/  ; \
+		); \
+	fi
+
+clean:
+	if [ -e src/Makefile ] ; then \
+	$(MAKE) $(MAKE_FLAGS) -C src -f Makefile clean; \
+	$(MAKE) $(MAKE_FLAGS) -C gui -f Makefile clean; \
+	fi
+	rm -rf src/Makefile
+
+build:	init
+	mkdir -p src/plugin; \
+	$(MAKE) $(MAKE_FLAGS) -C src -f Makefile all
+	$(MAKE) $(MAKE_FLAGS) -C gui -f Makefile all
+
+distclean:
+	if [ -e src/Makefile ]; then \
+		$(MAKE) -C src -f Makefile distclean; \
+		$(MAKE) -C gui -f Makefile distclean; \
+	fi
+
+install:
+ifeq ($(CONFIG_WAN_MANAGER),y)
+	if [ -e src/rp-pppoe.so ]; then \
+		install -c src/rp-pppoe.so $(INSTALL_DIR)/lib/rp-pppoe.so; \
+	fi  ;\
+	install -c src/pppoe $(INSTALL_DIR)/sbin/pppoe;
+else
+	if [ ! -e src/pppoe ] || [ ! -e src/pppoe-relay ] || [ ! -e src/pppoe-server ] || [ ! -e scripts/pppoe-lost ] || [ ! -e src/pppoe-sniff ]; then \
+		false; \
+	elif echo $(TARGET_APP_DIR) | grep "LITTLEAPPS" ; then \
+		install -c -m 755 scripts/pppoe-connect $(INSTALL_DIR_LITTLEAPPS)/sbin/pppoe-connect; \
+		ln -s -f ../../sbin/pppoe-connect $(INSTALL_DIR_LITTLEAPPS)/usr/sbin/pppoe-connect; \
+        install -c -m 755 scripts/pppoe-start $(INSTALL_DIR_LITTLEAPPS)/sbin/pppoe-start; \
+		ln -s -f ../../sbin/pppoe-start $(INSTALL_DIR_LITTLEAPPS)/usr/sbin/pppoe-start; \
+		install -c -m 755 scripts/pppoe-stop $(INSTALL_DIR_LITTLEAPPS)/sbin/pppoe-stop; \
+        ln -s -f ../../sbin/pppoe-stop $(INSTALL_DIR_LITTLEAPPS)/usr/sbin/pppoe-stop; \
+	else \
+		install -c src/rp-pppoe.so $(INSTALL_DIR)/lib/rp-pppoe.so; \
+		install -c src/pppoe $(INSTALL_DIR)/sbin/pppoe; \
+		ln -s -f ../../sbin/pppoe $(INSTALL_DIR)/usr/sbin/pppoe; \
+		install -c -m 755 scripts/pppoe-connect $(INSTALL_DIR)/sbin/pppoe-connect; \
+		ln -s -f ../../sbin/pppoe-connect $(INSTALL_DIR)/usr/sbin/pppoe-connect; \
+        install -c -m 755 scripts/pppoe-start $(INSTALL_DIR)/sbin/pppoe-start; \
+        ln -s -f ../../sbin/pppoe-start $(INSTALL_DIR)/usr/sbin/pppoe-start; \
+        install -c -m 755 scripts/pppoe-status $(INSTALL_DIR)/sbin/pppoe-status; \
+        ln -s -f ../../sbin/pppoe-status $(INSTALL_DIR)/usr/sbin/pppoe-status; \
+        install -c -m 755 scripts/pppoe-stop $(INSTALL_DIR)/sbin/pppoe-stop; \
+        ln -s -f ../../sbin/pppoe-stop $(INSTALL_DIR)/usr/sbin/pppoe-stop; \
+        install -c -m 755 scripts/pppoe-lost $(INSTALL_DIR)/sbin/pppoe-lost; \
+        ln -s -f ../../sbin/pppoe-lost $(INSTALL_DIR)/usr/sbin/pppoe-lost; \
+	fi
+endif
+
+fixfilemod:
+	find ./ -name "configure" | xargs chmod 755

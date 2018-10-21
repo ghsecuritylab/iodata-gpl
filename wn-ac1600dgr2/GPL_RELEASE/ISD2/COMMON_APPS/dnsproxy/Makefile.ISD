@@ -1,0 +1,47 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install
+
+DEPLIBS=
+
+all: clean build
+
+init: build-deplibs
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build-deplibs:
+ifneq ($(DEPLIBS),)
+	for d in $(DEPLIBS); do \
+		($(MAKE) -C $(APPS_FULL_DIR)/$$d -f Makefile.ISD); \
+	done;
+endif
+
+build:	init
+	$(MAKE) -f Makefile CROSS=$(CROSS) \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS)" \
+	APPS_FULL_DIR=$(APPS_FULL_DIR) all 
+
+distclean:
+	$(MAKE) -f Makefile distclean
+
+install_check:
+	if [ ! -e dnsproxy ]; then \
+		false; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c dnsproxy  $(PREFIX_DIR)/sbin; 
+else
+	install -c dnsproxy  $(TARGET_APP_DIR)/sbin ;
+endif

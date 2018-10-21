@@ -1,0 +1,5 @@
+#!/bin/sh
+
+[ -n "$broadcast" ] && BC="broadcast $broadcast"
+[ -n "$subnet" ] && NM="netmask $subnet"
+/sbin/ifconfig $interface $ip $BC $NM

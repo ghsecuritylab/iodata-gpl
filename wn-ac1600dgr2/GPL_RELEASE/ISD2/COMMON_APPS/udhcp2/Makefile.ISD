@@ -1,0 +1,53 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+MY_CFLAGS = $(EXTRA_CFLAGS) #-I$(TOP_DIR)/configs/h/ -I$(APPS_FULL_DIR)/h -I$(KERNEL_FULL_DIR)
+MY_LDFLAGS = $(EXTRA_LDFLAGS) 
+#MY_CFLAGS += -DUDHCP_DEBUG=1
+
+DEPLIBS=../MIPS32_KNLAPPS/busybox-1.7.x/
+
+.PHONY:	all init clean build distclean install
+
+all:	build
+
+init:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+build:	
+	$(MAKE) $(MAKE_FLAGS) -f Makefile CROSS_COMPILE=$(CROSS) \
+	EXTRA_CFLAGS="$(MY_CFLAGS)" \
+	PREFIX=$(TARGET_APP_DIR) \
+	EXTRA_LDFLAGS="$(MY_LDFLAGS)"
+
+
+build-deplibs:
+ifneq ($(DEPLIBS),)
+	for d in $(DEPLIBS); do \
+		($(MAKE) -C ../$$d  -f Makefile.ISD build); \
+	done;
+endif
+
+distclean:
+	$(MAKE) -f Makefile clean
+
+install_check:
+	if [ ! -e udhcpd ] ; then \
+		false; \
+	fi
+ 
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	install -c udhcpd $(PREFIX_DIR)/sbin; 
+else
+	install -c udhcpd $(TARGET_APP_DIR)/sbin;
+endif

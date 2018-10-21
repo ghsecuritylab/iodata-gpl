@@ -1,0 +1,22 @@
+#!/bin/sh
+R_C="/etc/resolv.conf"
+[ -n "$broadcast" ] && BC="broadcast $broadcast"
+[ -n "$subnet" ] && NM="netmask $subnet"
+/sbin/ifconfig $interface $ip $BC $NM
+if [ -n "$router" ]
+then
+	while /sbin/route del default gw 0.0.0.0 dev $interface
+	do :
+	done
+	for i in $router
+	do
+		/sbin/route add default gw $i dev $interface
+	done
+fi
+echo -n > $R_C
+[ -n "$domain" ] && echo domain $domain >> $R_C
+for i in $dns
+do
+	echo adding dns $i
+	echo nameserver $i >> $R_C
+done

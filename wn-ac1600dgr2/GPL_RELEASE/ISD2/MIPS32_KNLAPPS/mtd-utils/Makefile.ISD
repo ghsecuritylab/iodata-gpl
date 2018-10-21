@@ -1,0 +1,65 @@
+#######################################################################
+##
+## Embedded Target Makefile (ISD)
+##
+#######################################################################
+CONFIG_MAKE = ../../configs/config.make
+ifeq ($(wildcard $(CONFIG_MAKE)),$(CONFIG_MAKE))
+include $(CONFIG_MAKE)
+endif
+
+.PHONY:	all init clean build distclean install 
+
+# TODO: we may use kernel version.
+ifeq ($(ARCH), ubicom32)
+EXTRA_CFLAGS += -D__EXPORTED_HEADERS__ -I$(KERNEL_FULL_DIR)/arch/$(ARCH)/include
+endif
+
+all:	build strip_bin
+
+init:
+
+clean:
+	$(MAKE) -f Makefile clean
+
+#zlib: 
+	#$(MAKE) -f Makefile.ISD -C ../$(ZLIB_DIR)
+
+build:	init 
+	$(MAKE) -f Makefile CROSS=$(CROSS) \
+	EXTRA_CFLAGS="$(EXTRA_CFLAGS) -Os  -DHAS_REDUCE_CODE_SIZE=1 -DHAS_SUPPORT_FIFO=0 -DHAS_SUPPORT_REGULAR_FILE=0 -DHAS_SUPPORT_DIRECTORY=0" \
+	EXTRA_LDFLAGS="$(EXTRA_LDFLAGS)"  \
+		ZLIB_FULL_DIR=$(CROSSLIB_DIR)/$(ZLIB_DIR) \
+		KERNEL_FULL_DIR=$(KERNEL_FULL_DIR) \
+		all 
+
+strip_bin:
+	$(STRIP) eraseall
+	$(STRIP) mkfs.jffs2
+	ls -al eraseall
+	ls -al mkfs.jffs2
+
+distclean:
+	$(MAKE) -f Makefile clean
+
+install_check:
+	if [ ! -e mkfs.jffs2 ]; then \
+		false; \
+	else \
+		mkdir -p $(TARGET_APP_DIR)/sbin; \
+	fi
+
+install: install_check
+ifneq ($(PREFIX_DIR),)
+	mkdir -p $(PREFIX_DIR)/sbin;
+	install -c mkfs.jffs2  $(PREFIX_DIR)/sbin;
+ifneq ($(CONFIG_USE_ERASEALL),n)
+	install -c eraseall  $(PREFIX_DIR)/sbin;
+endif
+else
+	mkdir -p $(TARGET_APP_DIR)/sbin;
+	install -c mkfs.jffs2  $(TARGET_APP_DIR)/sbin;
+ifneq ($(CONFIG_USE_ERASEALL),n)
+	install -c eraseall  $(TARGET_APP_DIR)/sbin;
+endif
+endif

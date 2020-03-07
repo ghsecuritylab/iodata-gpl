@@ -1445,7 +1445,7 @@ int len;
 		}
 
 		/* Not so likely to happen. */
-		if (vallen >= len + sizeof (rhostname)) {
+		if (len - vallen >= sizeof (rhostname)) {
 #if HAS_DBGLOG
 			dbglog("EAP: trimming really long peer name down");
 #endif
@@ -1883,7 +1883,7 @@ int len;
 		}
 
 		/* Not so likely to happen. */
-		if (vallen >= len + sizeof (rhostname)) {
+		if (len - vallen >= sizeof (rhostname)) {
 #if HAS_DBGLOG
 			dbglog("EAP: trimming really long peer name down");
 #endif
